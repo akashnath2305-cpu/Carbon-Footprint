@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LogIn, Play, UserPlus } from 'lucide-react';
+import { LogIn, Play, UserPlus, Menu, X } from 'lucide-react';
 import TooltipIcon from './TooltipIcon';
 import { useAuth } from '../context/AuthContext';
 
@@ -13,6 +13,7 @@ export default function WelcomeView({ currentUser, dashboardData, onLoginClick, 
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isSelectingAvatar, setIsSelectingAvatar] = useState(false);
   const [isUpdatingAvatar, setIsUpdatingAvatar] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const handleAvatarChange = async (url) => {
     setIsUpdatingAvatar(true);
@@ -96,7 +97,7 @@ export default function WelcomeView({ currentUser, dashboardData, onLoginClick, 
       
       {/* Glass Navigation Header */}
       <header 
-        className="glass-panel" 
+        className="glass-panel app-header" 
         style={{ 
           margin: '20px auto', 
           width: '95%',
@@ -109,16 +110,22 @@ export default function WelcomeView({ currentUser, dashboardData, onLoginClick, 
           position: 'relative'
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'rgba(255,255,255,0.05)', padding: '4px 16px', borderRadius: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
-          <img src="/leaf_footprint.webp" alt="Logo" width="32" height="32" style={{ width: '32px', height: '32px', objectFit: 'cover', borderRadius: '50%', aspectRatio: '1/1' }} className="pulse-glow" />
-          <span className="pulse-glow" style={{ fontFamily: 'var(--font-headers)', fontWeight: 800, fontSize: '24px', color: '#ffffff', letterSpacing: '1px' }}>
-            Eco<span style={{ color: 'var(--accent-emerald)', fontWeight: 300 }}>Sense</span>
-          </span>
+        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+          <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(true)}>
+            <Menu size={24} />
+          </button>
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'rgba(255,255,255,0.05)', padding: '4px 16px', borderRadius: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
+            <img src="/leaf_footprint.webp" alt="Logo" width="32" height="32" style={{ width: '32px', height: '32px', objectFit: 'cover', borderRadius: '50%', aspectRatio: '1/1' }} className="pulse-glow" />
+            <span className="pulse-glow logo-text" style={{ fontFamily: 'var(--font-headers)', fontWeight: 800, fontSize: '24px', color: '#ffffff', letterSpacing: '1px' }}>
+              Eco<span style={{ color: 'var(--accent-emerald)', fontWeight: 300 }}>Sense</span>
+            </span>
+          </div>
         </div>
 
         {/* Central Navigation Links */}
         {currentUser && (
-          <nav style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
+          <nav className="nav-scrollable desktop-nav" style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
             <span 
               style={{ cursor: 'pointer', color: 'var(--accent-emerald)', fontWeight: 600, fontSize: '15px', display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.2s ease-in-out', whiteSpace: 'nowrap' }}
               onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; }}
@@ -148,7 +155,7 @@ export default function WelcomeView({ currentUser, dashboardData, onLoginClick, 
             ))}
           </nav>
         )}
-        <div style={{ display: 'flex', gap: '24px', alignItems: 'center', color: 'var(--text-primary)' }}>
+        <div className="hide-on-mobile" style={{ display: 'flex', gap: '24px', alignItems: 'center', color: 'var(--text-primary)' }}>
           {currentUser ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', position: 'relative' }}>
               <div 
@@ -277,6 +284,113 @@ export default function WelcomeView({ currentUser, dashboardData, onLoginClick, 
         </div>
       </header>
 
+      {/* Mobile Sidebar overlay */}
+      <div className={`mobile-sidebar-overlay ${isSidebarOpen ? 'open' : ''}`} onClick={() => setIsSidebarOpen(false)}></div>
+      
+      {/* Mobile Sidebar */}
+      <div className={`mobile-sidebar ${isSidebarOpen ? 'open' : ''}`}>
+          <button style={{ position: 'absolute', top: '24px', right: '24px', background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer' }} onClick={() => setIsSidebarOpen(false)}>
+            <X size={28} />
+          </button>
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+            <img src="/leaf_footprint.webp" alt="Logo" width="32" height="32" style={{ borderRadius: '50%', objectFit: 'cover' }} />
+            <h2 style={{ margin: 0, color: '#4ade80', fontSize: '24px', fontFamily: "'Playfair Display', serif" }}>EcoSense</h2>
+          </div>
+
+          <nav style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <span
+              onClick={() => { setIsSidebarOpen(false); }}
+              style={{ cursor: 'pointer', color: '#4ade80', fontWeight: 600, fontSize: '18px', display: 'flex', alignItems: 'center', gap: '12px' }}
+            >
+              <TooltipIcon name="Home" size={20} />
+              Home
+            </span>
+            {[
+              { id: 'overview', label: 'Overview', icon: 'BarChart2' },
+              { id: 'history', label: 'Recent Analysis', icon: 'History' },
+              { id: 'community', label: 'Community', icon: 'Users' },
+              { id: 'games', label: 'Eco Games', icon: 'Gamepad2' },
+              { id: 'rewards', label: 'Rewards', icon: 'Gift' },
+              { id: 'goals', label: 'Goals', icon: 'Target' }
+            ].map(tab => (
+              <span
+                key={tab.id}
+                onClick={() => { onNavigate && onNavigate(tab.id); setIsSidebarOpen(false); }}
+                style={{
+                  cursor: 'pointer',
+                  color: '#e2e8f0',
+                  fontWeight: 400,
+                  fontSize: '18px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px'
+                }}
+              >
+                <TooltipIcon name={tab.icon} size={20} />
+                {tab.label}
+              </span>
+            ))}
+            <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.1)', margin: '10px 0' }} />
+          
+          {currentUser ? (
+            <>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                {currentUser?.avatar_url ? (
+                  <img src={currentUser.avatar_url} alt="Profile" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
+                ) : (
+                  <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <TooltipIcon name="User" size={20} style={{ color: '#fff' }} />
+                  </div>
+                )}
+                <div>
+                  <div style={{ color: '#fff', fontWeight: 'bold' }}>{currentUser?.username || 'Eco Warrior'}</div>
+                  <div style={{ color: 'var(--accent-emerald)', fontSize: '12px' }}>{Math.round(totalEmissions || 0)} kg CO2</div>
+                </div>
+              </div>
+              
+              <button 
+                onClick={onLogout}
+                style={{ 
+                  background: 'rgba(239, 68, 68, 0.2)', 
+                  color: '#ef4444', 
+                  border: '1px solid rgba(239, 68, 68, 0.3)', 
+                  padding: '10px', 
+                  borderRadius: '8px', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  gap: '8px',
+                  cursor: 'pointer',
+                  marginTop: '10px',
+                  fontWeight: 'bold'
+                }}
+              >
+                <TooltipIcon name="LogOut" size={18} />
+                Logout
+              </button>
+            </>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '10px' }}>
+              <button 
+                className="skeuo-button" 
+                style={{ width: '100%', padding: '12px' }}
+                onClick={() => { setIsSidebarOpen(false); onLoginClick(); }}
+              >
+                <LogIn size={18} /> Login
+              </button>
+              <button 
+                className="skeuo-button" 
+                style={{ width: '100%', padding: '12px' }}
+                onClick={() => { setIsSidebarOpen(false); onCreateAccountClick(); }}
+              >
+                <UserPlus size={18} /> Register
+              </button>
+            </div>
+          )}
+        </nav>
+        </div>
+
       {/* Main Content Area */}
       <main 
         style={{ 
@@ -376,7 +490,7 @@ export default function WelcomeView({ currentUser, dashboardData, onLoginClick, 
 
         {/* Row 1: What is a Carbon Footprint (Full width) */}
         <div className="animate-slide-up" style={{ marginBottom: '40px', textAlign: 'left' }}>
-          <div className="glass-panel" style={{ padding: '40px', display: 'flex', gap: '40px', alignItems: 'center' }}>
+          <div className="glass-panel responsive-flex-row" style={{ padding: '40px', alignItems: 'center' }}>
             <div style={{ flex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
                 <TooltipIcon name="Info" size={28} style={{ color: 'var(--accent-emerald)' }} />
@@ -398,7 +512,7 @@ export default function WelcomeView({ currentUser, dashboardData, onLoginClick, 
         </div>
 
         {/* Row 2: Stats (Side by side) */}
-        <div className="animate-slide-up" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px', marginBottom: '40px' }}>
+        <div className="animate-slide-up responsive-grid-2" style={{ marginBottom: '40px' }}>
           <div className="glass-panel" style={{ padding: '30px', textAlign: 'center' }}>
             <TooltipIcon name="TreePine" size={40} style={{ color: 'var(--accent-emerald)', marginBottom: '16px' }} />
             <h2 style={{ fontSize: '16px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>Current Afforestation Average</h2>
@@ -415,7 +529,7 @@ export default function WelcomeView({ currentUser, dashboardData, onLoginClick, 
         </div>
 
         {/* Row 3: Fun Facts & News (Side by side) */}
-        <div className="animate-slide-up" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px', marginBottom: '40px', textAlign: 'left', alignItems: 'start' }}>
+        <div className="animate-slide-up responsive-grid-2" style={{ marginBottom: '40px', textAlign: 'left', alignItems: 'start' }}>
           
           <div className="glass-panel" style={{ padding: '30px', height: '100%' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>

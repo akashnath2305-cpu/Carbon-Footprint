@@ -94,7 +94,7 @@ export default function CalculatorResult({ result, onFinish }) {
       </div>
 
       {/* Top Stats & Breakdown */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px', marginBottom: '40px' }}>
+      <div className="responsive-grid-2" style={{ marginBottom: '40px' }}>
         
         {/* Total & Comparison */}
         <div className="glass-panel" style={{ padding: '30px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>

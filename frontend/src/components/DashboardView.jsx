@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo, lazy, Suspense } from 'react';
-import { FileText, Plus, Car, Zap, Coffee, Trash2 } from 'lucide-react';
+import { FileText, Plus, Car, Zap, Coffee, Trash2, Menu, X } from 'lucide-react';
 import TooltipIcon from './TooltipIcon';
 import { useAuth } from '../context/AuthContext';
 
@@ -22,6 +22,7 @@ export default function DashboardView({ initialTab, dashboardData, onLogAdded, o
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isSelectingAvatar, setIsSelectingAvatar] = useState(false);
   const [isUpdatingAvatar, setIsUpdatingAvatar] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (initialTab) {
@@ -265,6 +266,7 @@ export default function DashboardView({ initialTab, dashboardData, onLogAdded, o
     <div style={{ minHeight: '100vh', paddingBottom: '60px' }}>
       
       <header 
+        className="app-header"
         style={{ 
           position: 'fixed', 
           top: '20px', 
@@ -286,14 +288,20 @@ export default function DashboardView({ initialTab, dashboardData, onLogAdded, o
           border: '1px solid rgba(255,255,255,0.05)'
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(0,0,0,0.3)', padding: '6px 20px 6px 6px', borderRadius: '40px', border: '1px solid rgba(255,255,255,0.05)', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.5)' }}>
-          <div className="pulse-glow" style={{ borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255, 255, 255, 0.1)', padding: '2px' }}>
-            <img src="/leaf_footprint.webp" alt="Logo" width="32" height="32" style={{ width: '32px', height: '32px', objectFit: 'cover', borderRadius: '50%', filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.8)) drop-shadow(0 0 8px rgba(74, 222, 128, 0.6))', aspectRatio: '1/1' }} />
+        <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(true)}>
+          <Menu size={24} />
+        </button>
+
+        <div className="hide-on-mobile" style={{ display: 'flex', gap: '24px', alignItems: 'center', color: 'var(--text-primary)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(0,0,0,0.3)', padding: '6px 20px 6px 6px', borderRadius: '40px', border: '1px solid rgba(255,255,255,0.05)', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.5)' }}>
+            <div className="pulse-glow" style={{ borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255, 255, 255, 0.1)', padding: '2px' }}>
+              <img src="/leaf_footprint.webp" alt="Logo" width="32" height="32" style={{ width: '32px', height: '32px', objectFit: 'cover', borderRadius: '50%', filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.8)) drop-shadow(0 0 8px rgba(74, 222, 128, 0.6))', aspectRatio: '1/1' }} />
+            </div>
+            <h1 className="pulse-glow logo-text" style={{ fontSize: '20px', margin: 0, fontWeight: 700, fontFamily: "'Playfair Display', serif", color: '#4ade80', textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>EcoSense</h1>
           </div>
-          <h1 className="pulse-glow" style={{ fontSize: '20px', margin: 0, fontWeight: 700, fontFamily: "'Playfair Display', serif", color: '#4ade80', textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>EcoSense</h1>
         </div>
 
-        <nav style={{ display: 'flex', gap: '48px', alignItems: 'center', flex: 1, justifyContent: 'center' }}>
+        <nav className="nav-scrollable desktop-nav" style={{ display: 'flex', gap: '48px', alignItems: 'center', flex: 1, justifyContent: 'center' }}>
           <span
             onClick={onGoHome}
             style={{ 
@@ -474,6 +482,93 @@ export default function DashboardView({ initialTab, dashboardData, onLogAdded, o
         </div>
       </header>
 
+      {/* Mobile Sidebar overlay */}
+      <div className={`mobile-sidebar-overlay ${isSidebarOpen ? 'open' : ''}`} onClick={() => setIsSidebarOpen(false)}></div>
+      
+      {/* Mobile Sidebar */}
+      <div className={`mobile-sidebar ${isSidebarOpen ? 'open' : ''}`}>
+        <button style={{ position: 'absolute', top: '24px', right: '24px', background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer' }} onClick={() => setIsSidebarOpen(false)}>
+          <X size={28} />
+        </button>
+        
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+          <img src="/leaf_footprint.webp" alt="Logo" width="32" height="32" style={{ borderRadius: '50%', objectFit: 'cover' }} />
+          <h2 style={{ margin: 0, color: '#4ade80', fontSize: '24px', fontFamily: "'Playfair Display', serif" }}>EcoSense</h2>
+        </div>
+
+        <nav style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <span
+            onClick={() => { onGoHome(); setIsSidebarOpen(false); }}
+            style={{ cursor: 'pointer', color: '#e2e8f0', fontSize: '18px', display: 'flex', alignItems: 'center', gap: '12px' }}
+          >
+            <TooltipIcon name="Home" size={20} />
+            Home
+          </span>
+          {[
+            { id: 'overview', label: 'Overview', icon: 'BarChart2' },
+            { id: 'history', label: 'Recent Analysis', icon: 'History' },
+            { id: 'community', label: 'Community', icon: 'Users' },
+            { id: 'games', label: 'Eco Games', icon: 'Gamepad2' },
+            { id: 'rewards', label: 'Rewards', icon: 'Gift' },
+            { id: 'goals', label: 'Goals', icon: 'Target' }
+          ].map(tab => (
+            <span
+              key={tab.id}
+              onClick={() => { setActiveTab(tab.id); setIsSidebarOpen(false); }}
+              style={{
+                cursor: 'pointer',
+                color: activeTab === tab.id ? '#4ade80' : '#e2e8f0',
+                fontWeight: activeTab === tab.id ? 600 : 400,
+                fontSize: '18px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px'
+              }}
+            >
+              <TooltipIcon name={tab.icon} size={20} />
+              {tab.label}
+            </span>
+          ))}
+          
+          <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.1)', margin: '10px 0' }} />
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            {currentUser?.avatar_url ? (
+              <img src={currentUser.avatar_url} alt="Profile" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
+            ) : (
+              <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <TooltipIcon name="User" size={20} style={{ color: '#fff' }} />
+              </div>
+            )}
+            <div>
+              <div style={{ color: '#fff', fontWeight: 'bold' }}>{currentUser?.username || 'Eco Warrior'}</div>
+              <div style={{ color: 'var(--accent-emerald)', fontSize: '12px' }}>{Math.round(totalEmissions)} kg CO2</div>
+            </div>
+          </div>
+          
+          <button 
+            onClick={onLogout}
+            style={{ 
+              background: 'rgba(239, 68, 68, 0.2)', 
+              color: '#ef4444', 
+              border: '1px solid rgba(239, 68, 68, 0.3)', 
+              padding: '10px', 
+              borderRadius: '8px', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              gap: '8px',
+              cursor: 'pointer',
+              marginTop: '10px',
+              fontWeight: 'bold'
+            }}
+          >
+            <TooltipIcon name="LogOut" size={18} />
+            Logout
+          </button>
+        </nav>
+      </div>
+
       {/* Main Content Area */}
       <main style={{ maxWidth: '1400px', margin: '100px auto 0', padding: '0 24px', position: 'relative', zIndex: 10 }}>
         
@@ -481,7 +576,7 @@ export default function DashboardView({ initialTab, dashboardData, onLogAdded, o
           <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
             
             {/* Top Stats Section */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px', alignItems: 'center' }}>
+            <div className="responsive-grid-2" style={{ alignItems: 'center' }}>
               
               {/* Circular Trackers */}
               <div className="glass-panel" style={{ padding: '40px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -512,7 +607,7 @@ export default function DashboardView({ initialTab, dashboardData, onLogAdded, o
                 </div>
 
                 {/* Sub Trackers */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', width: '100%' }}>
+                <div className="responsive-grid-4" style={{ width: '100%' }}>
                   {[
                     { label: 'Transport', value: transportEmissions, color: '#60a5fa' },
                     { label: 'Energy', value: energyEmissions, color: '#fbbf24' },
@@ -567,7 +662,7 @@ export default function DashboardView({ initialTab, dashboardData, onLogAdded, o
             </div>
 
             {/* Charts Section */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
+            <div className="responsive-grid-2">
               <Suspense fallback={<div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>Loading charts...</div>}>
                 <DashboardCharts emissionsOverTime={emissionsOverTime} categoryData={categoryData} />
               </Suspense>
@@ -579,7 +674,7 @@ export default function DashboardView({ initialTab, dashboardData, onLogAdded, o
             </Suspense>
 
             {/* Bottom Section: Reports and Insights */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '32px', alignItems: 'start' }}>
+            <div className="responsive-grid-2" style={{ alignItems: 'start' }}>
               
               {/* Your Report (Recent Activities) */}
               <div className="glass-panel" style={{ padding: '30px' }}>

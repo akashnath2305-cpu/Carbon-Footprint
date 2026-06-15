@@ -57,8 +57,11 @@ export default function GlobalMap() {
   };
 
   return (
-    <div className="glass-panel" style={{ position: 'relative', overflow: 'hidden', height: '750px', display: 'flex', flexDirection: 'column' }}>
-      <h3 style={{ fontSize: '22px', color: '#ffffff', margin: '24px 24px 16px 24px', fontFamily: "'Playfair Display', serif", zIndex: 10 }}>Global Impact Explorer</h3>
+    <div className="glass-panel" style={{ position: 'relative', overflow: 'hidden', height: '70vh', minHeight: '600px', maxHeight: '750px', padding: 0 }}>
+      {/* Title */}
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10, pointerEvents: 'none', padding: '24px' }}>
+        <h3 style={{ fontSize: '22px', color: '#ffffff', margin: 0, fontFamily: "'Playfair Display', serif", textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>Global Impact Explorer</h3>
+      </div>
       
       {/* Legend */}
       <div style={{ position: 'absolute', top: '70px', right: '24px', zIndex: 10, background: 'rgba(0,0,0,0.6)', padding: '16px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
@@ -81,8 +84,8 @@ export default function GlobalMap() {
         </div>
       </div>
 
-      <div style={{ flex: 1, position: 'relative', width: '100%', height: '100%', borderRadius: '0 0 16px 16px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Suspense fallback={<div style={{ color: '#fff' }}>Loading 3D Globe...</div>}>
+      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Suspense fallback={<div style={{ color: '#fff', padding: '24px' }}>Loading 3D Globe...</div>}>
           <Globe
             ref={globeEl}
             globeImageUrl="//unpkg.com/three-globe/example/img/earth-night.jpg"

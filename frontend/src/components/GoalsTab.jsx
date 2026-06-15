@@ -50,7 +50,7 @@ export default function GoalsTab() {
   ];
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '32px', alignItems: 'start' }}>
+    <div className="responsive-grid-2" style={{ alignItems: 'start' }}>
       
       {/* Goals Section */}
       <div className="glass-panel" style={{ padding: '30px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
@@ -107,7 +107,9 @@ export default function GoalsTab() {
               <span style={{ 
                 color: goal.completed ? 'var(--text-muted)' : '#ffffff', 
                 textDecoration: goal.completed ? 'line-through' : 'none',
-                fontSize: '15px'
+                fontSize: '15px',
+                flex: 1,
+                wordBreak: 'break-word'
               }}>
                 {goal.text}
               </span>
@@ -264,7 +266,7 @@ export default function GoalsTab() {
         
         <p style={{ color: 'var(--text-muted)', fontSize: '14px', marginBottom: '24px' }}>Complete goals and reduce your footprint to unlock these badges!</p>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', flex: 1 }}>
+        <div className="responsive-grid-2" style={{ flex: 1 }}>
           <div style={{ background: 'rgba(167, 139, 250, 0.1)', border: '1px solid rgba(167, 139, 250, 0.3)', borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', textAlign: 'center', boxShadow: '0 4px 12px rgba(167, 139, 250, 0.1)' }}>
             <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'linear-gradient(135deg, #a78bfa, #8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(139, 92, 246, 0.5)' }}>
               <Star size={24} color="#fff" />

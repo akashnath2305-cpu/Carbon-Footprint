@@ -149,19 +149,19 @@ export default function CalculatorWizard({ onSubmit, onCancel }) {
             </button>
           )}
 
-          <div className="glass-panel animate-fade-in" style={{ padding: '40px 20px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div className="glass-panel animate-fade-in wizard-main-panel" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
         
         {/* STEP 1: HOUSEHOLD */}
         {step === 1 && (
           <div className="animate-slide-up">
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '10px' }}>
-              <div style={{ textAlign: 'right', marginRight: '20px', color: 'var(--text-muted)', fontSize: '14px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', lineHeight: '1.4' }}>HOW MANY<br/>PEOPLE LIVE<br/>IN YOUR</div>
-              <h2 style={{ color: 'var(--text-primary)', fontSize: '70px', fontFamily: "'Playfair Display', serif", fontStyle: 'italic', margin: 0, lineHeight: '1' }}>Household?</h2>
+            <div className="wizard-title-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '10px' }}>
+              <div className="wizard-title-left" style={{ textAlign: 'right', marginRight: '20px', color: 'var(--text-muted)', fontSize: '14px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', lineHeight: '1.4' }}>HOW MANY<br/>PEOPLE LIVE<br/>IN YOUR</div>
+              <h2 className="wizard-title-right" style={{ color: 'var(--text-primary)', fontSize: '70px', fontFamily: "'Playfair Display', serif", fontStyle: 'italic', margin: 0, lineHeight: '1' }}>Household?</h2>
             </div>
             <p style={{ color: 'var(--text-muted)', fontStyle: 'italic', fontSize: '14px', textAlign: 'center', marginBottom: '10px' }}>Some details will be asked at a household level, for example, total electricity consumption per year.</p>
             <p style={{ color: 'var(--text-muted)', fontStyle: 'italic', fontSize: '14px', textAlign: 'center', marginBottom: '60px' }}>To arrive at your specific share of household level consumption, please provide the number of people in your household.</p>
             
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '40px' }}>
+            <div className="wizard-counter-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '40px' }}>
               <button 
                 onClick={() => setHouseholdSize(Math.max(1, householdSize - 1))}
                 style={{ width: '40px', height: '40px', borderRadius: '50%', border: '2px solid var(--text-dark)', background: 'transparent', color: 'var(--text-dark)', fontSize: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
@@ -258,6 +258,14 @@ export default function CalculatorWizard({ onSubmit, onCancel }) {
             
             <div className="visual-card-grid">
               <div className="visual-card">
+                <div className="co2-cloud"><strong>0.041 kg</strong><br/><span style={{fontWeight: 400}}>of CO₂ emitted<br/>per km</span></div>
+                <div className="visual-card-icon" style={{ background: '#f3e8ff', color: '#7e22ce' }}><TooltipIcon name="Train" size={56} /></div>
+                <div className="visual-card-title">Travel by Train</div>
+                <div className="visual-card-subtitle">(in km)</div>
+                <input type="number" min="0" className="visual-input-yellow" placeholder="000" value={publicTravel.train} onChange={e => setPublicTravel({...publicTravel, train: e.target.value})} />
+              </div>
+
+              <div className="visual-card">
                 <div className="co2-cloud"><strong>0.054 kg</strong><br/><span style={{fontWeight: 400}}>of CO₂ emitted<br/>per km</span></div>
                 <div className="visual-card-icon" style={{ background: '#fef2f2', color: '#b91c1c' }}><TooltipIcon name="Bus" size={56} /></div>
                 <div className="visual-card-title">Bus Travel</div>
@@ -287,14 +295,6 @@ export default function CalculatorWizard({ onSubmit, onCancel }) {
                 <div className="visual-card-title">Electric Cab/Taxi</div>
                 <div className="visual-card-subtitle">(in km)</div>
                 <input type="number" min="0" className="visual-input-yellow" placeholder="000" value={publicTravel.ecab} onChange={e => setPublicTravel({...publicTravel, ecab: e.target.value})} />
-              </div>
-
-              <div className="visual-card">
-                <div className="co2-cloud"><strong>0.041 kg</strong><br/><span style={{fontWeight: 400}}>of CO₂ emitted<br/>per km</span></div>
-                <div className="visual-card-icon" style={{ background: '#f3e8ff', color: '#7e22ce' }}><TooltipIcon name="Train" size={56} /></div>
-                <div className="visual-card-title">Travel by Train</div>
-                <div className="visual-card-subtitle">(in km)</div>
-                <input type="number" min="0" className="visual-input-yellow" placeholder="000" value={publicTravel.train} onChange={e => setPublicTravel({...publicTravel, train: e.target.value})} />
               </div>
             </div>
 
@@ -428,7 +428,7 @@ export default function CalculatorWizard({ onSubmit, onCancel }) {
             </div>
             <p style={{ color: 'var(--text-muted)', fontStyle: 'italic', fontSize: '16px', textAlign: 'center', marginBottom: '60px' }}>Please provide your household's average monthly electricity usage in kWh.</p>
             
-            <div className="visual-card-grid" style={{ display: 'flex', justifyContent: 'center' }}>
+            <div className="visual-card-grid">
               <div className="visual-card" style={{ maxWidth: '300px' }}>
                 <div className="co2-cloud"><strong>0.41 kg</strong><br/><span style={{fontWeight: 400}}>of CO₂ emitted<br/>per kWh</span></div>
                 <div className="visual-card-icon" style={{ background: '#fef9c3', color: '#a16207' }}><TooltipIcon name="Zap" size={56} /></div>
@@ -464,7 +464,7 @@ export default function CalculatorWizard({ onSubmit, onCancel }) {
             </div>
             <p style={{ color: 'var(--text-muted)', fontStyle: 'italic', fontSize: '16px', textAlign: 'center', marginBottom: '60px' }}>Please estimate the number of short and long-haul flights you take annually.</p>
             
-            <div className="visual-card-grid" style={{ display: 'flex', justifyContent: 'center', gap: '40px' }}>
+            <div className="visual-card-grid">
               <div className="visual-card" style={{ maxWidth: '300px' }}>
                 <div className="co2-cloud"><strong>150 kg</strong><br/><span style={{fontWeight: 400}}>of CO₂ emitted<br/>per flight</span></div>
                 <div className="visual-card-icon" style={{ background: '#e0f2fe', color: '#0369a1' }}><TooltipIcon name="Plane" size={56} /></div>
