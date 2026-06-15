@@ -1,4 +1,5 @@
 import express from 'express';
+import fs from 'fs';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import pool from './db.js';
@@ -408,6 +409,25 @@ app.delete('/api/history/:id', authenticateToken, async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Backend server running on http://localhost:${PORT}`);
+// Initialize database if needed before starting server
+const initializeDB = async () => {
+  try {
+    const res = await pool.query("SELECT to_regclass('public.users') as table_exists");
+    if (!res.rows[0].table_exists) {
+      console.log('Database not initialized. Running initialization script...');
+      const sql = fs.readFileSync('db_init.sql', 'utf8');
+      await pool.query(sql);
+      console.log('Database initialized successfully!');
+    } else {
+      console.log('Database already initialized.');
+    }
+  } catch (err) {
+    console.error('Error checking or initializing database:', err);
+  }
+};
+
+initializeDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Backend server running on http://localhost:${PORT}`);
+  });
 });
