@@ -10,6 +10,7 @@ export default defineConfig(({ mode }) => {
       include: ['canvas-confetti']
     },
     build: {
+      sourcemap: true,
       rollupOptions: {
         output: {
           manualChunks(id) {
