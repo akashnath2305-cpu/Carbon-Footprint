@@ -70,6 +70,7 @@ export default function Header({ currentUser, dashboardData, onLoginClick, onCre
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
           <button 
             className="mobile-menu-btn" 
+            aria-label="Open mobile menu"
             onClick={() => setIsSidebarOpen(true)}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', cursor: 'pointer' }}
           >
@@ -267,7 +268,7 @@ export default function Header({ currentUser, dashboardData, onLoginClick, onCre
       
       {/* Mobile Sidebar */}
       <div className={`mobile-sidebar ${isSidebarOpen ? 'open' : ''}`}>
-            <button style={{ position: 'absolute', top: '24px', right: '24px', background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer' }} onClick={() => setIsSidebarOpen(false)}>
+            <button aria-label="Close mobile menu" style={{ position: 'absolute', top: '24px', right: '24px', background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer' }} onClick={() => setIsSidebarOpen(false)}>
               <X size={28} />
             </button>
             

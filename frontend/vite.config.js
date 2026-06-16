@@ -9,6 +9,17 @@ export default defineConfig(({ mode }) => {
     optimizeDeps: {
       include: ['canvas-confetti']
     },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            vendor: ['react', 'react-dom'],
+            charts: ['recharts'],
+            icons: ['lucide-react']
+          }
+        }
+      }
+    },
     server: {
       allowedHosts: ['carbon-footprint-1-893m.onrender.com', 'localhost'],
       proxy: {
