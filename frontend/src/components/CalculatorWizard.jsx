@@ -161,33 +161,37 @@ export default function CalculatorWizard({ onSubmit, onCancel }) {
             <p style={{ color: 'var(--text-muted)', fontStyle: 'italic', fontSize: '14px', textAlign: 'center', marginBottom: '10px' }}>Some details will be asked at a household level, for example, total electricity consumption per year.</p>
             <p style={{ color: 'var(--text-muted)', fontStyle: 'italic', fontSize: '14px', textAlign: 'center', marginBottom: '60px' }}>To arrive at your specific share of household level consumption, please provide the number of people in your household.</p>
             
-            <div className="wizard-counter-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '40px' }}>
-              <button 
-                onClick={() => setHouseholdSize(Math.max(1, householdSize - 1))}
-                style={{ width: '40px', height: '40px', borderRadius: '50%', border: '2px solid var(--text-dark)', background: 'transparent', color: 'var(--text-dark)', fontSize: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
-              >-</button>
-              
-              <div style={{ position: 'relative', width: '300px', height: '200px', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
-                <div style={{ position: 'absolute', width: '200px', height: '140px', background: 'rgba(74, 222, 128, 0.1)', borderRadius: '100px', zIndex: 1, bottom: '20px' }}></div>
-                <div style={{ position: 'relative', zIndex: 2, display: 'flex', alignItems: 'flex-end', gap: '10px' }}>
-                  <div style={{ display: 'flex', gap: '-10px', alignItems: 'flex-end' }}>
+            <div className="wizard-counter-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '30px' }}>
+              <div className="household-visual-wrapper">
+                <div className="household-bg-circle"></div>
+                <div className="household-visual-content">
+                  <div className="household-users">
                     {Array.from({ length: Math.min(householdSize, 5) }).map((_, i) => (
-                      <div key={i} style={{ color: 'var(--text-muted)', paddingBottom: '0px' }}>
+                      <div key={i} className="household-user-icon" style={{ color: 'var(--text-muted)' }}>
                         <TooltipIcon name="User" size={56} />
                       </div>
                     ))}
                     {householdSize > 5 && <div style={{ color: 'var(--text-muted)', paddingBottom: '15px', fontWeight: 'bold', fontSize: '20px', marginLeft: '10px' }}>+{householdSize - 5}</div>}
                   </div>
-                  <div style={{ color: 'var(--accent-emerald)' }}>
+                  <div className="household-home">
                     <TooltipIcon name="Home" size={100} />
                   </div>
                 </div>
               </div>
 
-              <button 
-                onClick={() => setHouseholdSize(householdSize + 1)}
-                style={{ width: '40px', height: '40px', borderRadius: '50%', border: '2px solid var(--text-dark)', background: 'transparent', color: 'var(--text-dark)', fontSize: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
-              >+</button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '40px' }}>
+                <button 
+                  onClick={() => setHouseholdSize(Math.max(1, householdSize - 1))}
+                  style={{ width: '50px', height: '50px', borderRadius: '50%', border: '2px solid var(--text-dark)', background: 'rgba(255,255,255,0.05)', color: 'var(--text-dark)', fontSize: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s', paddingBottom: '4px' }}
+                >-</button>
+                <div style={{ fontSize: '32px', fontWeight: 'bold', color: 'var(--accent-emerald)', minWidth: '40px', textAlign: 'center' }}>
+                  {householdSize}
+                </div>
+                <button 
+                  onClick={() => setHouseholdSize(householdSize + 1)}
+                  style={{ width: '50px', height: '50px', borderRadius: '50%', border: '2px solid var(--text-dark)', background: 'rgba(255,255,255,0.05)', color: 'var(--text-dark)', fontSize: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s', paddingBottom: '2px' }}
+                >+</button>
+              </div>
             </div>
 
             <div style={{ marginTop: '60px', display: 'flex', justifyContent: 'center' }}>

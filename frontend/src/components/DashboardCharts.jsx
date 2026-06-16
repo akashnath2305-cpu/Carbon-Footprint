@@ -1,13 +1,94 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { ChevronDown } from 'lucide-react';
+import CustomDropdown from './CustomDropdown';
 
-export default function DashboardCharts({ emissionsOverTime, categoryData }) {
+export default function DashboardCharts({ emissionsOverTime, categoryData, trendFilter, setTrendFilter, categoryFilter, setCategoryFilter }) {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const options = [
+    { value: 'Today', label: 'Today' },
+    { value: 'Week', label: 'This Week' },
+    { value: 'Month', label: 'This Month' },
+    { value: 'Year', label: 'This Year' }
+  ];
+
   return (
     <>
       <div className="glass-panel" style={{ padding: '30px', height: '400px', display: 'flex', flexDirection: 'column' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
           <h3 style={{ fontSize: '18px', color: '#ffffff', fontFamily: "'Playfair Display', serif", margin: 0 }}>Emissions Trend</h3>
-          {/* Note: The dropdown was left in the parent or recreated here. For simplicity, we just render the chart here. */}
+          {setTrendFilter && (
+            <div style={{ position: 'relative' }}>
+              <button 
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                onBlur={() => setTimeout(() => setIsDropdownOpen(false), 200)}
+                style={{ 
+                  background: 'rgba(255,255,255,0.1)', 
+                  color: '#fff', 
+                  border: '1px solid rgba(255,255,255,0.2)', 
+                  borderRadius: '8px', 
+                  padding: '6px 12px',
+                  fontSize: '14px',
+                  outline: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}
+              >
+                {options.find(o => o.value === trendFilter)?.label || trendFilter}
+                <ChevronDown size={14} />
+              </button>
+              
+              {isDropdownOpen && (
+                <div className="animate-slide-up" style={{
+                  position: 'absolute',
+                  top: '100%',
+                  right: 0,
+                  marginTop: '8px',
+                  background: 'rgba(15, 23, 42, 0.9)',
+                  backdropFilter: 'blur(16px)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: '8px',
+                  padding: '4px',
+                  minWidth: '130px',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+                  zIndex: 100,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '2px'
+                }}>
+                  {options.map(opt => (
+                    <div 
+                      key={opt.value}
+                      onClick={() => {
+                        setTrendFilter(opt.value);
+                        setIsDropdownOpen(false);
+                      }}
+                      style={{
+                        padding: '8px 12px',
+                        cursor: 'pointer',
+                        borderRadius: '4px',
+                        color: trendFilter === opt.value ? '#4ade80' : '#fff',
+                        background: trendFilter === opt.value ? 'rgba(74, 222, 128, 0.1)' : 'transparent',
+                        fontSize: '14px',
+                        transition: 'background 0.2s'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (trendFilter !== opt.value) e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                      }}
+                      onMouseLeave={(e) => {
+                        if (trendFilter !== opt.value) e.currentTarget.style.background = 'transparent';
+                      }}
+                    >
+                      {opt.label}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
         <div style={{ flex: 1, minHeight: 0 }}>
           <ResponsiveContainer width="100%" height="100%">
@@ -26,7 +107,16 @@ export default function DashboardCharts({ emissionsOverTime, categoryData }) {
       </div>
 
       <div className="glass-panel" style={{ padding: '30px', height: '400px', display: 'flex', flexDirection: 'column' }}>
-        <h3 style={{ fontSize: '18px', color: '#ffffff', marginBottom: '24px', fontFamily: "'Playfair Display', serif" }}>Category Breakdown</h3>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+          <h3 style={{ fontSize: '18px', color: '#ffffff', fontFamily: "'Playfair Display', serif", margin: 0 }}>Category Breakdown</h3>
+          {setCategoryFilter && (
+            <CustomDropdown 
+              value={categoryFilter} 
+              onChange={setCategoryFilter} 
+              options={options}
+            />
+          )}
+        </div>
         <div style={{ flex: 1, minHeight: 0 }}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={categoryData} layout="vertical" margin={{ top: 0, right: 20, left: 20, bottom: 0 }}>

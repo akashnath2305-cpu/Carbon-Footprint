@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { LogIn, Play, UserPlus, Menu, X } from 'lucide-react';
 import TooltipIcon from './TooltipIcon';
 import { useAuth } from '../context/AuthContext';
+import Header from './Header';
 
 export default function WelcomeView({ currentUser, dashboardData, onLoginClick, onCreateAccountClick, onProceed, onLogout, onNavigate }) {
   const { token, login } = useAuth();
@@ -10,33 +11,7 @@ export default function WelcomeView({ currentUser, dashboardData, onLoginClick, 
   
   const [scrollY, setScrollY] = useState(0);
   
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [isSelectingAvatar, setIsSelectingAvatar] = useState(false);
-  const [isUpdatingAvatar, setIsUpdatingAvatar] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const handleAvatarChange = async (url) => {
-    setIsUpdatingAvatar(true);
-    try {
-      const res = await fetch('/api/auth/avatar', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ avatar_url: url })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        login(data.user, token);
-        setIsSelectingAvatar(false);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsUpdatingAvatar(false);
-    }
-  };
   
   // Quotes Carousel State
   const quotes = [
@@ -95,301 +70,15 @@ export default function WelcomeView({ currentUser, dashboardData, onLoginClick, 
   return (
     <div style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden' }}>
       
-      {/* Glass Navigation Header */}
-      <header 
-        className="glass-panel app-header" 
-        style={{ 
-          margin: '20px auto', 
-          width: '95%',
-          maxWidth: '1600px', 
-          padding: '10px 32px', 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center',
-          zIndex: 10,
-          position: 'relative'
-        }}
-      >
-        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-          <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(true)}>
-            <Menu size={24} />
-          </button>
-          
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'rgba(255,255,255,0.05)', padding: '4px 16px', borderRadius: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
-            <img src="/leaf_footprint.webp" alt="Logo" width="32" height="32" style={{ width: '32px', height: '32px', objectFit: 'cover', borderRadius: '50%', aspectRatio: '1/1' }} className="pulse-glow" />
-            <span className="pulse-glow logo-text" style={{ fontFamily: 'var(--font-headers)', fontWeight: 800, fontSize: '24px', color: '#ffffff', letterSpacing: '1px' }}>
-              Eco<span style={{ color: 'var(--accent-emerald)', fontWeight: 300 }}>Sense</span>
-            </span>
-          </div>
-        </div>
-
-        {/* Central Navigation Links */}
-        {currentUser && (
-          <nav className="nav-scrollable desktop-nav" style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
-            <span 
-              style={{ cursor: 'pointer', color: 'var(--accent-emerald)', fontWeight: 600, fontSize: '15px', display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.2s ease-in-out', whiteSpace: 'nowrap' }}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}
-            >
-              <TooltipIcon name="Home" size={16} />
-              Home
-            </span>
-            {[
-              { id: 'overview', label: 'Overview', icon: 'BarChart2' },
-              { id: 'history', label: 'Recent Analysis', icon: 'History' },
-              { id: 'community', label: 'Community', icon: 'Users' },
-              { id: 'games', label: 'Eco Games', icon: 'Gamepad2' },
-              { id: 'rewards', label: 'Rewards', icon: 'Gift' },
-              { id: 'goals', label: 'Goals', icon: 'Target' }
-            ].map(tab => (
-              <span
-                key={tab.id}
-                onClick={() => onNavigate && onNavigate(tab.id)}
-                style={{ cursor: 'pointer', color: 'var(--text-muted)', fontSize: '15px', display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.2s ease-in-out', whiteSpace: 'nowrap' }}
-                onMouseEnter={(e) => { e.currentTarget.style.color = '#ffffff'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.transform = 'translateY(0)'; }}
-              >
-                <TooltipIcon name={tab.icon} size={16} />
-                {tab.label}
-              </span>
-            ))}
-          </nav>
-        )}
-        <div className="hide-on-mobile" style={{ display: 'flex', gap: '24px', alignItems: 'center', color: 'var(--text-primary)' }}>
-          {currentUser ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', position: 'relative' }}>
-              <div 
-                onClick={() => setIsProfileOpen(!isProfileOpen)}
-                style={{ 
-                  display: 'flex', alignItems: 'center', gap: '12px', background: isProfileOpen ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.3)', padding: '8px 20px', borderRadius: '30px', border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', transition: 'background 0.2s'
-                }}
-              >
-                {currentUser?.avatar_url ? (
-                  <img src={currentUser.avatar_url} alt="avatar" style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', background: '#fff' }} />
-                ) : (
-                  <TooltipIcon name="User" size={20} style={{ color: 'var(--accent-emerald)' }} />
-                )}
-                <span style={{ fontWeight: 600, fontSize: '15px', color: '#fff' }}>Hi, {currentUser.username}</span>
-              </div>
-
-              {isProfileOpen && (
-                <div className="animate-slide-up" style={{
-                  position: 'absolute',
-                  top: '100%',
-                  right: '48px',
-                  marginTop: '12px',
-                  background: 'rgba(15, 23, 42, 0.95)',
-                  backdropFilter: 'blur(16px)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  borderRadius: '16px',
-                  padding: '24px',
-                  width: '260px',
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
-                  zIndex: 200,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center'
-                }}>
-                  {isSelectingAvatar ? (
-                    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                      <h3 style={{ color: '#fff', margin: '0 0 16px 0' }}>Choose Avatar</h3>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
-                        {['/avatars/avatar1.png', '/avatars/avatar2.png', '/avatars/avatar3.png', '/avatars/avatar4.png'].map(url => (
-                          <img 
-                            key={url}
-                            src={url} 
-                            alt="avatar option" 
-                            onClick={() => !isUpdatingAvatar && handleAvatarChange(url)}
-                            style={{ 
-                              width: '60px', height: '60px', borderRadius: '50%', cursor: 'pointer', objectFit: 'cover', background: '#fff',
-                              border: currentUser?.avatar_url === url ? '3px solid var(--accent-emerald)' : '3px solid transparent',
-                              opacity: isUpdatingAvatar ? 0.5 : 1,
-                              transition: 'transform 0.2s'
-                            }}
-                            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-                            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                          />
-                        ))}
-                      </div>
-                      <button onClick={() => setIsSelectingAvatar(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '12px' }}>Cancel</button>
-                    </div>
-                  ) : (
-                    <>
-                      <div style={{ position: 'relative' }}>
-                        {currentUser?.avatar_url ? (
-                          <img src={currentUser.avatar_url} alt="Profile" style={{ width: '80px', height: '80px', borderRadius: '50%', marginBottom: '16px', border: '3px solid var(--accent-emerald)', objectFit: 'cover', background: '#fff' }} />
-                        ) : (
-                          <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px', border: '3px solid var(--accent-emerald)' }}>
-                            <TooltipIcon name="User" size={40} style={{ color: '#fff' }} />
-                          </div>
-                        )}
-                        <button 
-                          onClick={() => setIsSelectingAvatar(true)}
-                          style={{ position: 'absolute', bottom: '16px', right: '-8px', background: 'var(--accent-emerald)', color: '#000', border: 'none', borderRadius: '50%', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.5)' }}
-                          title="Change Avatar"
-                        >
-                          <TooltipIcon name="Edit2" size={14} />
-                        </button>
-                      </div>
-                      <h3 style={{ margin: '0 0 4px 0', fontSize: '20px', color: '#fff' }}>{currentUser?.username || 'Eco Warrior'}</h3>
-                      <p style={{ margin: '0 0 20px 0', fontSize: '13px', color: 'rgba(255,255,255,0.6)' }}>{currentUser?.email || 'user@example.com'}</p>
-                      
-                      <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', padding: '12px 20px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px' }}>
-                        <div style={{ textAlign: 'center' }}>
-                          <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase' }}>Emissions</div>
-                          <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--accent-emerald)' }}>{Math.round(totalEmissions)} kg</div>
-                        </div>
-                        <div style={{ textAlign: 'center' }}>
-                          <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase' }}>Pending Pts</div>
-                          <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#fbbf24' }}>{currentUser?.pending_points || 0}</div>
-                        </div>
-                        <div style={{ textAlign: 'center' }}>
-                          <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase' }}>Logs</div>
-                          <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#60a5fa' }}>{recentLogs?.length || 0}</div>
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </div>
-              )}
-
-              <button 
-                onClick={onLogout}
-                style={{ 
-                  background: 'rgba(0,0,0,0.3)', 
-                  border: '1px solid rgba(255,255,255,0.1)', 
-                  cursor: 'pointer', 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'center', 
-                  padding: '8px', 
-                  borderRadius: '50%', 
-                  color: 'var(--accent-emerald)',
-                  transition: 'background 0.3s'
-                }}
-                title="Logout"
-              >
-                <TooltipIcon name="LogOut" size={20} />
-              </button>
-            </div>
-          ) : (
-            <button 
-              className="skeuo-button" 
-              style={{ borderRadius: '30px', padding: '12px 32px' }}
-              onClick={onLoginClick}
-            >
-              <LogIn size={18} /> Login / Sign Up
-            </button>
-          )}
-        </div>
-      </header>
-
-      {/* Mobile Sidebar overlay */}
-      <div className={`mobile-sidebar-overlay ${isSidebarOpen ? 'open' : ''}`} onClick={() => setIsSidebarOpen(false)}></div>
-      
-      {/* Mobile Sidebar */}
-      <div className={`mobile-sidebar ${isSidebarOpen ? 'open' : ''}`}>
-          <button style={{ position: 'absolute', top: '24px', right: '24px', background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer' }} onClick={() => setIsSidebarOpen(false)}>
-            <X size={28} />
-          </button>
-          
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-            <img src="/leaf_footprint.webp" alt="Logo" width="32" height="32" style={{ borderRadius: '50%', objectFit: 'cover' }} />
-            <h2 style={{ margin: 0, color: '#4ade80', fontSize: '24px', fontFamily: "'Playfair Display', serif" }}>EcoSense</h2>
-          </div>
-
-          <nav style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <span
-              onClick={() => { setIsSidebarOpen(false); }}
-              style={{ cursor: 'pointer', color: '#4ade80', fontWeight: 600, fontSize: '18px', display: 'flex', alignItems: 'center', gap: '12px' }}
-            >
-              <TooltipIcon name="Home" size={20} />
-              Home
-            </span>
-            {[
-              { id: 'overview', label: 'Overview', icon: 'BarChart2' },
-              { id: 'history', label: 'Recent Analysis', icon: 'History' },
-              { id: 'community', label: 'Community', icon: 'Users' },
-              { id: 'games', label: 'Eco Games', icon: 'Gamepad2' },
-              { id: 'rewards', label: 'Rewards', icon: 'Gift' },
-              { id: 'goals', label: 'Goals', icon: 'Target' }
-            ].map(tab => (
-              <span
-                key={tab.id}
-                onClick={() => { onNavigate && onNavigate(tab.id); setIsSidebarOpen(false); }}
-                style={{
-                  cursor: 'pointer',
-                  color: '#e2e8f0',
-                  fontWeight: 400,
-                  fontSize: '18px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px'
-                }}
-              >
-                <TooltipIcon name={tab.icon} size={20} />
-                {tab.label}
-              </span>
-            ))}
-            <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.1)', margin: '10px 0' }} />
-          
-          {currentUser ? (
-            <>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                {currentUser?.avatar_url ? (
-                  <img src={currentUser.avatar_url} alt="Profile" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
-                ) : (
-                  <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <TooltipIcon name="User" size={20} style={{ color: '#fff' }} />
-                  </div>
-                )}
-                <div>
-                  <div style={{ color: '#fff', fontWeight: 'bold' }}>{currentUser?.username || 'Eco Warrior'}</div>
-                  <div style={{ color: 'var(--accent-emerald)', fontSize: '12px' }}>{Math.round(totalEmissions || 0)} kg CO2</div>
-                </div>
-              </div>
-              
-              <button 
-                onClick={onLogout}
-                style={{ 
-                  background: 'rgba(239, 68, 68, 0.2)', 
-                  color: '#ef4444', 
-                  border: '1px solid rgba(239, 68, 68, 0.3)', 
-                  padding: '10px', 
-                  borderRadius: '8px', 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'center', 
-                  gap: '8px',
-                  cursor: 'pointer',
-                  marginTop: '10px',
-                  fontWeight: 'bold'
-                }}
-              >
-                <TooltipIcon name="LogOut" size={18} />
-                Logout
-              </button>
-            </>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '10px' }}>
-              <button 
-                className="skeuo-button" 
-                style={{ width: '100%', padding: '12px' }}
-                onClick={() => { setIsSidebarOpen(false); onLoginClick(); }}
-              >
-                <LogIn size={18} /> Login
-              </button>
-              <button 
-                className="skeuo-button" 
-                style={{ width: '100%', padding: '12px' }}
-                onClick={() => { setIsSidebarOpen(false); onCreateAccountClick(); }}
-              >
-                <UserPlus size={18} /> Register
-              </button>
-            </div>
-          )}
-        </nav>
-        </div>
+      <Header 
+        currentUser={currentUser}
+        dashboardData={dashboardData}
+        onLoginClick={onLoginClick}
+        onCreateAccountClick={onCreateAccountClick}
+        onLogout={onLogout}
+        onNavigate={onNavigate}
+        activeTab="home"
+      />
 
       {/* Main Content Area */}
       <main 
@@ -398,7 +87,7 @@ export default function WelcomeView({ currentUser, dashboardData, onLoginClick, 
           margin: '40px auto', 
           padding: '0 24px', 
           position: 'relative', 
-          zIndex: 5, 
+          zIndex: 1, 
           textAlign: 'center' 
         }}
       >

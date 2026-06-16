@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef, useMemo, lazy, Suspense } from 'rea
 import { FileText, Plus, Car, Zap, Coffee, Trash2, Menu, X } from 'lucide-react';
 import TooltipIcon from './TooltipIcon';
 import { useAuth } from '../context/AuthContext';
-
+import CustomDropdown from './CustomDropdown';
+import Header from './Header';
 const DashboardCharts = lazy(() => import('./DashboardCharts'));
 const EcoGames = lazy(() => import('./EcoGames'));
 const CommunityTab = lazy(() => import('./CommunityTab'));
@@ -18,7 +19,8 @@ export default function DashboardView({ initialTab, dashboardData, onLogAdded, o
   const [aiLoading, setAiLoading] = useState(false);
   const [activeTab, setActiveTab] = useState(initialTab || 'overview');
   const [trendFilter, setTrendFilter] = useState('Month');
-  const [isTrendDropdownOpen, setIsTrendDropdownOpen] = useState(false);
+  const [dashboardFilter, setDashboardFilter] = useState('Month');
+  const [categoryFilter, setCategoryFilter] = useState('Month');
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isSelectingAvatar, setIsSelectingAvatar] = useState(false);
   const [isUpdatingAvatar, setIsUpdatingAvatar] = useState(false);
@@ -150,16 +152,51 @@ export default function DashboardView({ initialTab, dashboardData, onLogAdded, o
     }
   };
 
+  // Helper function to filter logs by timeframe
+  const filterLogsByTimeframe = (logs, timeframe) => {
+    const now = new Date();
+    return logs.filter(log => {
+      const logDate = new Date(log.logged_at);
+      if (timeframe === 'Today') {
+        return logDate.toDateString() === now.toDateString();
+      } else if (timeframe === 'Week') {
+        const weekAgo = new Date(now);
+        weekAgo.setDate(now.getDate() - 7);
+        return logDate >= weekAgo;
+      } else if (timeframe === 'Month') {
+        const monthAgo = new Date(now);
+        monthAgo.setMonth(now.getMonth() - 1);
+        return logDate >= monthAgo;
+      } else if (timeframe === 'Year') {
+        const yearAgo = new Date(now);
+        yearAgo.setFullYear(now.getFullYear() - 1);
+        return logDate >= yearAgo;
+      }
+      return true;
+    });
+  };
+
   // Calculate category breakdowns from recent logs
-  const calculateCategoryEmissions = (cat) => {
-    return recentLogs
+  const calculateCategoryEmissions = (cat, timeframe) => {
+    return filterLogsByTimeframe(recentLogs, timeframe)
       .filter(log => log.category === cat)
       .reduce((sum, log) => sum + parseFloat(log.carbon_emissions), 0);
   };
-  const transportEmissions = calculateCategoryEmissions('transportation');
-  const energyEmissions = calculateCategoryEmissions('energy');
-  const foodEmissions = calculateCategoryEmissions('food');
-  const wasteEmissions = calculateCategoryEmissions('waste');
+  
+  const transportEmissions = calculateCategoryEmissions('transportation', dashboardFilter);
+  const energyEmissions = calculateCategoryEmissions('energy', dashboardFilter);
+  const foodEmissions = calculateCategoryEmissions('food', dashboardFilter);
+  const wasteEmissions = calculateCategoryEmissions('waste', dashboardFilter);
+  
+  const transportCategoryEmissions = calculateCategoryEmissions('transportation', categoryFilter);
+  const energyCategoryEmissions = calculateCategoryEmissions('energy', categoryFilter);
+  const foodCategoryEmissions = calculateCategoryEmissions('food', categoryFilter);
+  const wasteCategoryEmissions = calculateCategoryEmissions('waste', categoryFilter);
+
+  const dashboardFilteredTotal = useMemo(() => {
+    return filterLogsByTimeframe(recentLogs, dashboardFilter)
+      .reduce((sum, log) => sum + parseFloat(log.carbon_emissions), 0);
+  }, [recentLogs, dashboardFilter]);
   const recentTotalEmissions = useMemo(() => {
     const now = new Date();
     const filteredLogs = recentLogs.filter(log => {
@@ -255,322 +292,29 @@ export default function DashboardView({ initialTab, dashboardData, onLogAdded, o
   // Prepare data for Bar Chart (emissions by category)
   const categoryData = useMemo(() => {
     return [
-      { name: 'Transport', emissions: Math.round(transportEmissions), fill: '#60a5fa' },
-      { name: 'Energy', emissions: Math.round(energyEmissions), fill: '#fbbf24' },
-      { name: 'Food', emissions: Math.round(foodEmissions), fill: '#f87171' },
-      { name: 'Waste', emissions: Math.round(wasteEmissions), fill: '#a78bfa' }
+      { name: 'Transport', emissions: Math.round(transportCategoryEmissions), fill: '#60a5fa' },
+      { name: 'Energy', emissions: Math.round(energyCategoryEmissions), fill: '#fbbf24' },
+      { name: 'Food', emissions: Math.round(foodCategoryEmissions), fill: '#f87171' },
+      { name: 'Waste', emissions: Math.round(wasteCategoryEmissions), fill: '#a78bfa' }
     ];
-  }, [transportEmissions, energyEmissions, foodEmissions, wasteEmissions]);
+  }, [transportCategoryEmissions, energyCategoryEmissions, foodCategoryEmissions, wasteCategoryEmissions]);
 
   return (
     <div style={{ minHeight: '100vh', paddingBottom: '60px' }}>
       
-      <header 
-        className="app-header"
-        style={{ 
-          position: 'fixed', 
-          top: '20px', 
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 100, 
-          padding: '10px 24px', 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center',
-          gap: '40px',
-          borderRadius: '50px',
-          background: 'rgba(0, 0, 0, 0.65)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          width: '95%',
-          maxWidth: '1600px',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.7)',
-          border: '1px solid rgba(255,255,255,0.05)'
-        }}
-      >
-        <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(true)}>
-          <Menu size={24} />
-        </button>
 
-        <div className="hide-on-mobile" style={{ display: 'flex', gap: '24px', alignItems: 'center', color: 'var(--text-primary)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(0,0,0,0.3)', padding: '6px 20px 6px 6px', borderRadius: '40px', border: '1px solid rgba(255,255,255,0.05)', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.5)' }}>
-            <div className="pulse-glow" style={{ borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255, 255, 255, 0.1)', padding: '2px' }}>
-              <img src="/leaf_footprint.webp" alt="Logo" width="32" height="32" style={{ width: '32px', height: '32px', objectFit: 'cover', borderRadius: '50%', filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.8)) drop-shadow(0 0 8px rgba(74, 222, 128, 0.6))', aspectRatio: '1/1' }} />
-            </div>
-            <h1 className="pulse-glow logo-text" style={{ fontSize: '20px', margin: 0, fontWeight: 700, fontFamily: "'Playfair Display', serif", color: '#4ade80', textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>EcoSense</h1>
-          </div>
-        </div>
-
-        <nav className="nav-scrollable desktop-nav" style={{ display: 'flex', gap: '48px', alignItems: 'center', flex: 1, justifyContent: 'center' }}>
-          <span
-            onClick={onGoHome}
-            style={{ 
-              cursor: 'pointer', 
-              color: '#e2e8f0', 
-              fontSize: '15px', 
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              transition: 'all 0.2s ease-in-out',
-              textShadow: '0 2px 4px rgba(0,0,0,0.8)'
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.color = '#4ade80'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = '#e2e8f0'; e.currentTarget.style.transform = 'translateY(0)'; }}
-          >
-            <TooltipIcon name="Home" size={18} style={{ filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.8))' }} />
-            Home
-          </span>
-          {[
-            { id: 'overview', label: 'Overview', icon: 'BarChart2' },
-            { id: 'history', label: 'Recent Analysis', icon: 'History' },
-            { id: 'community', label: 'Community', icon: 'Users' },
-            { id: 'games', label: 'Eco Games', icon: 'Gamepad2' },
-            { id: 'rewards', label: 'Rewards', icon: 'Gift' },
-            { id: 'goals', label: 'Goals', icon: 'Target' }
-          ].map(tab => (
-            <span
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              style={{
-                cursor: 'pointer',
-                color: activeTab === tab.id ? '#4ade80' : '#e2e8f0',
-                fontWeight: activeTab === tab.id ? 600 : 400,
-                fontSize: '15px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                transition: 'all 0.2s ease-in-out',
-                textShadow: '0 2px 4px rgba(0,0,0,0.8)'
-              }}
-              onMouseEnter={(e) => { if (activeTab !== tab.id) { e.currentTarget.style.color = '#4ade80'; e.currentTarget.style.transform = 'translateY(-2px)'; } }}
-              onMouseLeave={(e) => { if (activeTab !== tab.id) { e.currentTarget.style.color = '#e2e8f0'; e.currentTarget.style.transform = 'translateY(0)'; } }}
-            >
-              <TooltipIcon name={tab.icon} size={18} style={{ filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.8))' }} />
-              {tab.label}
-            </span>
-          ))}
-        </nav>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', position: 'relative' }}>
-          <div 
-            onClick={() => setIsProfileOpen(!isProfileOpen)}
-            style={{ 
-              padding: '8px 20px', 
-              fontSize: '14px', 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '10px',
-              background: isProfileOpen ? 'rgba(255,255,255,0.2)' : 'transparent',
-              border: '1px solid rgba(255,255,255,0.1)',
-              borderRadius: '30px',
-              color: '#fff',
-              fontWeight: 600,
-              cursor: 'pointer',
-              textShadow: '0 2px 4px rgba(0,0,0,0.8)',
-              boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.3)',
-              transition: 'background 0.2s'
-            }}
-          >
-            {currentUser?.avatar_url ? (
-              <img src={currentUser.avatar_url} alt="avatar" style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', background: '#fff' }} />
-            ) : (
-              <TooltipIcon name="User" size={18} style={{ filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.8))' }} />
-            )}
-            Hi, {currentUser?.username || 'you'}
-          </div>
-
-          {isProfileOpen && (
-            <div className="animate-slide-up" style={{
-              position: 'absolute',
-              top: '100%',
-              right: '48px',
-              marginTop: '12px',
-              background: 'rgba(15, 23, 42, 0.95)',
-              backdropFilter: 'blur(16px)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              borderRadius: '16px',
-              padding: '24px',
-              width: '260px',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
-              zIndex: 200,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center'
-            }}>
-              {isSelectingAvatar ? (
-                <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <h3 style={{ color: '#fff', margin: '0 0 16px 0' }}>Choose Avatar</h3>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
-                    {['/avatars/avatar1.png', '/avatars/avatar2.png', '/avatars/avatar3.png', '/avatars/avatar4.png'].map(url => (
-                      <img 
-                        key={url}
-                        src={url} 
-                        alt="avatar option" 
-                        onClick={() => !isUpdatingAvatar && handleAvatarChange(url)}
-                        style={{ 
-                          width: '60px', height: '60px', borderRadius: '50%', cursor: 'pointer', objectFit: 'cover', background: '#fff',
-                          border: currentUser?.avatar_url === url ? '3px solid var(--accent-emerald)' : '3px solid transparent',
-                          opacity: isUpdatingAvatar ? 0.5 : 1,
-                          transition: 'transform 0.2s'
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-                        onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                      />
-                    ))}
-                  </div>
-                  <button onClick={() => setIsSelectingAvatar(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '12px' }}>Cancel</button>
-                </div>
-              ) : (
-                <>
-                  <div style={{ position: 'relative' }}>
-                    {currentUser?.avatar_url ? (
-                      <img src={currentUser.avatar_url} alt="Profile" style={{ width: '80px', height: '80px', borderRadius: '50%', marginBottom: '16px', border: '3px solid var(--accent-emerald)', objectFit: 'cover', background: '#fff' }} />
-                    ) : (
-                      <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px', border: '3px solid var(--accent-emerald)' }}>
-                        <TooltipIcon name="User" size={40} style={{ color: '#fff' }} />
-                      </div>
-                    )}
-                    <button 
-                      onClick={() => setIsSelectingAvatar(true)}
-                      style={{ position: 'absolute', bottom: '16px', right: '-8px', background: 'var(--accent-emerald)', color: '#000', border: 'none', borderRadius: '50%', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.5)' }}
-                      title="Change Avatar"
-                    >
-                      <TooltipIcon name="Edit2" size={14} />
-                    </button>
-                  </div>
-                  <h3 style={{ margin: '0 0 4px 0', fontSize: '20px', color: '#fff' }}>{currentUser?.username || 'Eco Warrior'}</h3>
-                  <p style={{ margin: '0 0 20px 0', fontSize: '13px', color: 'rgba(255,255,255,0.6)' }}>{currentUser?.email || 'user@example.com'}</p>
-                  
-                  <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', padding: '12px 20px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px' }}>
-                    <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase' }}>Emissions</div>
-                      <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--accent-emerald)' }}>{Math.round(totalEmissions)} kg</div>
-                    </div>
-                    <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase' }}>Pending Pts</div>
-                      <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#fbbf24' }}>{currentUser?.pending_points || 0}</div>
-                    </div>
-                    <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase' }}>Logs</div>
-                      <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#60a5fa' }}>{recentLogs?.length || 0}</div>
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-          )}
-
-          <button 
-            onClick={onLogout}
-            style={{ 
-              background: 'rgba(0,0,0,0.5)', 
-              border: '1px solid rgba(255,255,255,0.1)', 
-              cursor: 'pointer', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center', 
-              padding: '8px', 
-              borderRadius: '50%', 
-              color: 'var(--accent-emerald)',
-              transition: 'background 0.3s',
-              boxShadow: '0 2px 6px rgba(0,0,0,0.6)'
-            }}
-            title="Logout"
-          >
-            <TooltipIcon name="LogOut" size={18} style={{ filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.8))' }} />
-          </button>
-        </div>
-      </header>
-
-      {/* Mobile Sidebar overlay */}
-      <div className={`mobile-sidebar-overlay ${isSidebarOpen ? 'open' : ''}`} onClick={() => setIsSidebarOpen(false)}></div>
-      
-      {/* Mobile Sidebar */}
-      <div className={`mobile-sidebar ${isSidebarOpen ? 'open' : ''}`}>
-        <button style={{ position: 'absolute', top: '24px', right: '24px', background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer' }} onClick={() => setIsSidebarOpen(false)}>
-          <X size={28} />
-        </button>
-        
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-          <img src="/leaf_footprint.webp" alt="Logo" width="32" height="32" style={{ borderRadius: '50%', objectFit: 'cover' }} />
-          <h2 style={{ margin: 0, color: '#4ade80', fontSize: '24px', fontFamily: "'Playfair Display', serif" }}>EcoSense</h2>
-        </div>
-
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <span
-            onClick={() => { onGoHome(); setIsSidebarOpen(false); }}
-            style={{ cursor: 'pointer', color: '#e2e8f0', fontSize: '18px', display: 'flex', alignItems: 'center', gap: '12px' }}
-          >
-            <TooltipIcon name="Home" size={20} />
-            Home
-          </span>
-          {[
-            { id: 'overview', label: 'Overview', icon: 'BarChart2' },
-            { id: 'history', label: 'Recent Analysis', icon: 'History' },
-            { id: 'community', label: 'Community', icon: 'Users' },
-            { id: 'games', label: 'Eco Games', icon: 'Gamepad2' },
-            { id: 'rewards', label: 'Rewards', icon: 'Gift' },
-            { id: 'goals', label: 'Goals', icon: 'Target' }
-          ].map(tab => (
-            <span
-              key={tab.id}
-              onClick={() => { setActiveTab(tab.id); setIsSidebarOpen(false); }}
-              style={{
-                cursor: 'pointer',
-                color: activeTab === tab.id ? '#4ade80' : '#e2e8f0',
-                fontWeight: activeTab === tab.id ? 600 : 400,
-                fontSize: '18px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px'
-              }}
-            >
-              <TooltipIcon name={tab.icon} size={20} />
-              {tab.label}
-            </span>
-          ))}
-          
-          <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.1)', margin: '10px 0' }} />
-          
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            {currentUser?.avatar_url ? (
-              <img src={currentUser.avatar_url} alt="Profile" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
-            ) : (
-              <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <TooltipIcon name="User" size={20} style={{ color: '#fff' }} />
-              </div>
-            )}
-            <div>
-              <div style={{ color: '#fff', fontWeight: 'bold' }}>{currentUser?.username || 'Eco Warrior'}</div>
-              <div style={{ color: 'var(--accent-emerald)', fontSize: '12px' }}>{Math.round(totalEmissions)} kg CO2</div>
-            </div>
-          </div>
-          
-          <button 
-            onClick={onLogout}
-            style={{ 
-              background: 'rgba(239, 68, 68, 0.2)', 
-              color: '#ef4444', 
-              border: '1px solid rgba(239, 68, 68, 0.3)', 
-              padding: '10px', 
-              borderRadius: '8px', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center', 
-              gap: '8px',
-              cursor: 'pointer',
-              marginTop: '10px',
-              fontWeight: 'bold'
-            }}
-          >
-            <TooltipIcon name="LogOut" size={18} />
-            Logout
-          </button>
-        </nav>
-      </div>
+      {/* Unified Header */}
+      <Header 
+        currentUser={currentUser}
+        dashboardData={dashboardData}
+        onLogout={onLogout}
+        onNavigate={setActiveTab}
+        onGoHome={onGoHome}
+        activeTab={activeTab}
+      />
 
       {/* Main Content Area */}
-      <main style={{ maxWidth: '1400px', margin: '100px auto 0', padding: '0 24px', position: 'relative', zIndex: 10 }}>
+      <main style={{ maxWidth: '1400px', margin: 'var(--space-lg) auto 0', padding: '0 24px', position: 'relative', zIndex: 1 }}>
         
         {activeTab === 'overview' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
@@ -580,7 +324,19 @@ export default function DashboardView({ initialTab, dashboardData, onLogAdded, o
               
               {/* Circular Trackers */}
               <div className="glass-panel" style={{ padding: '40px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <h3 style={{ fontSize: '20px', color: '#ffffff', marginBottom: '24px', fontFamily: "'Playfair Display', serif" }}>Emissions Dashboard</h3>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '24px' }}>
+                  <h3 style={{ fontSize: '20px', color: '#ffffff', fontFamily: "'Playfair Display', serif", margin: 0 }}>Emissions Dashboard</h3>
+                  <CustomDropdown 
+                    value={dashboardFilter} 
+                    onChange={setDashboardFilter} 
+                    options={[
+                      { value: 'Today', label: 'Today' },
+                      { value: 'Week', label: 'This Week' },
+                      { value: 'Month', label: 'This Month' },
+                      { value: 'Year', label: 'This Year' }
+                    ]}
+                  />
+                </div>
                 
                 {/* Main Tracker */}
                 <div 
@@ -601,7 +357,7 @@ export default function DashboardView({ initialTab, dashboardData, onLogAdded, o
                 >
                   <span style={{ fontSize: '12px', opacity: 0.9, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' }}>Total Emissions</span>
                   <span style={{ fontSize: '64px', fontWeight: 800, margin: '4px 0', lineHeight: 1, color: '#4ade80' }}>
-                    {aiInsights ? Math.round(aiInsights.totalEstimatedCO2 || totalEmissions) : Math.round(totalEmissions)}
+                    {dashboardFilter === 'Year' && aiInsights ? Math.round(aiInsights.totalEstimatedCO2 || dashboardFilteredTotal) : Math.round(dashboardFilteredTotal)}
                   </span>
                   <span style={{ fontSize: '14px', fontWeight: 600 }}>Kgs CO₂</span>
                 </div>
@@ -664,7 +420,14 @@ export default function DashboardView({ initialTab, dashboardData, onLogAdded, o
             {/* Charts Section */}
             <div className="responsive-grid-2">
               <Suspense fallback={<div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>Loading charts...</div>}>
-                <DashboardCharts emissionsOverTime={emissionsOverTime} categoryData={categoryData} />
+                <DashboardCharts 
+                  emissionsOverTime={emissionsOverTime} 
+                  categoryData={categoryData} 
+                  trendFilter={trendFilter}
+                  setTrendFilter={setTrendFilter}
+                  categoryFilter={categoryFilter}
+                  setCategoryFilter={setCategoryFilter}
+                />
               </Suspense>
             </div>
 

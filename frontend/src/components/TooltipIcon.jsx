@@ -10,9 +10,9 @@ export default function TooltipIcon({ name, tooltipText, size = 20, className = 
   }
 
   return (
-    <div className={`tooltip-wrapper ${className}`} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: style.color || 'inherit', ...style }}>
+    <div className={`tooltip-wrapper ${className}`} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: style.color || 'inherit', position: 'relative', ...style }}>
       <IconComponent size={size} />
-      <span className="tooltip-box">{tooltipText}</span>
+      {tooltipText && <span className="tooltip-box">{tooltipText}</span>}
     </div>
   );
 }

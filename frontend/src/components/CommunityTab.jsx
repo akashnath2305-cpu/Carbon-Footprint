@@ -61,9 +61,9 @@ export default function CommunityTab({ tips, fetchMore, hasMore, isLoading }) {
     <div className="animate-fade-in" style={{ padding: '24px 0' }}>
       
       {/* Community Campaigns Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
         <TooltipIcon name="Users" tooltipText="Community Events" size={28} style={{ color: 'var(--accent-emerald)' }} />
-        <h2 style={{ fontSize: '24px', color: 'var(--text-dark)' }}>Community Campaigns</h2>
+        <h2 style={{ fontSize: '24px', color: 'var(--text-dark)', margin: 0 }}>Community Campaigns</h2>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px', marginBottom: '40px' }}>

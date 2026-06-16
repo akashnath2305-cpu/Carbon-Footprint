@@ -211,15 +211,15 @@ export default function RewardsTab() {
   return (
     <div className="animate-slide-up" style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       {/* Points Summary Header */}
-      <div className="glass-panel" style={{ padding: '30px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%)', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
-        <div>
+      <div className="glass-panel" style={{ padding: '30px', display: 'flex', flexWrap: 'wrap', gap: '24px', justifyContent: 'space-between', alignItems: 'center', background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%)', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+        <div style={{ flex: '1 1 200px' }}>
           <h2 style={{ fontSize: '28px', color: '#fff', fontFamily: "'Playfair Display', serif", margin: '0 0 8px 0', display: 'flex', alignItems: 'center', gap: '12px' }}>
             <Coins color="var(--accent-emerald)" size={32} /> Your Rewards Balance
           </h2>
           <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '15px' }}>Earn points by logging activities and joining eco-campaigns.</p>
         </div>
         
-        <div style={{ display: 'flex', gap: '32px', textAlign: 'center', alignItems: 'center' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '32px', textAlign: 'center', alignItems: 'center' }}>
           <div>
             <div style={{ fontSize: '12px', textTransform: 'uppercase', color: 'var(--text-muted)', letterSpacing: '1px' }}>Collected</div>
             <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#fff' }}>{totalPoints}</div>
@@ -228,7 +228,7 @@ export default function RewardsTab() {
             <div style={{ fontSize: '12px', textTransform: 'uppercase', color: 'var(--text-muted)', letterSpacing: '1px' }}>Used</div>
             <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#ef4444' }}>{usedPoints}</div>
           </div>
-          <div style={{ paddingLeft: '32px', borderLeft: '1px solid rgba(255,255,255,0.1)' }}>
+          <div className="balance-highlight">
             <div style={{ fontSize: '12px', textTransform: 'uppercase', color: 'var(--accent-emerald)', letterSpacing: '1px', fontWeight: 'bold' }}>Available Balance</div>
             <div style={{ fontSize: '40px', fontWeight: 800, color: 'var(--accent-emerald)', lineHeight: 1 }}>{availablePoints}</div>
           </div>
