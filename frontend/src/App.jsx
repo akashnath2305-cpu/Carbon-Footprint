@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
 import WelcomeView from './components/WelcomeView';
-import LoginView from './components/LoginView';
-import DashboardView from './components/DashboardView';
+const LoginView = lazy(() => import('./components/LoginView'));
+const DashboardView = lazy(() => import('./components/DashboardView'));
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 const CalculatorWizard = lazy(() => import('./components/CalculatorWizard'));
@@ -122,12 +122,14 @@ function AppContent() {
         />
       )}
       {view === 'login' && (
-        <LoginView 
-          initialIsSignUp={isRegistering}
-          onLogin={(user) => {
-            setView('welcome');
-          }} 
-        />
+        <Suspense fallback={<div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>Loading Login...</div>}>
+          <LoginView 
+            initialIsSignUp={isRegistering}
+            onLogin={(user) => {
+              setView('welcome');
+            }} 
+          />
+        </Suspense>
       )}
       {view === 'wizard' && (
         <Suspense fallback={<div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>Loading Setup...</div>}>
@@ -138,16 +140,18 @@ function AppContent() {
         </Suspense>
       )}
       {view === 'dashboard' && currentUser && (
-        <DashboardView 
-          initialTab={dashboardTab}
-          dashboardData={dashboardData} 
-          onLogAdded={handleLogAdded}
-          onLogout={() => {
-            logout();
-            setView('welcome');
-          }}
-          onGoHome={() => setView('welcome')}
-        />
+        <Suspense fallback={<div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>Loading Dashboard...</div>}>
+          <DashboardView 
+            initialTab={dashboardTab}
+            dashboardData={dashboardData} 
+            onLogAdded={handleLogAdded}
+            onLogout={() => {
+              logout();
+              setView('welcome');
+            }}
+            onGoHome={() => setView('welcome')}
+          />
+        </Suspense>
       )}
     </div>
   );
