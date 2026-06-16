@@ -421,6 +421,8 @@ h6 {
 .typing-text {
   display: inline-block;
   white-space: pre-wrap;
+  min-height: 1.2em; /* Matches font size to reserve vertical space */
+  min-width: 200px;  /* Matches expected maximum width of text */
 }
 
 /* Leaf Loader */
