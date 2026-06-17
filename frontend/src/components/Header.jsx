@@ -246,6 +246,39 @@ export default function Header({ currentUser, dashboardData, onLoginClick, onCre
             </>
           )}
         </div>
+
+        {currentUser && (
+          <button 
+            className="mobile-profile-btn"
+            onClick={() => setIsProfileOpen(!isProfileOpen)}
+            style={{
+              background: 'transparent',
+              border: '2px solid #ffffff',
+              borderRadius: '50%',
+              width: '36px',
+              height: '36px',
+              padding: 0,
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              overflow: 'hidden',
+              boxShadow: '0 2px 8px rgba(255,255,255,0.2)',
+              transition: 'transform 0.2s',
+              flexShrink: 0
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+            title="Open Profile"
+          >
+            {currentUser?.avatar_url ? (
+              <img src={currentUser.avatar_url} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover', background: '#fff' }} />
+            ) : (
+              <div style={{ color: '#fff', fontSize: '14px', fontWeight: 'bold' }}>
+                {currentUser?.username ? currentUser.username[0].toUpperCase() : 'U'}
+              </div>
+            )}
+          </button>
+        )}
       </header>
 
       {/* Mobile Sidebar overlay */}

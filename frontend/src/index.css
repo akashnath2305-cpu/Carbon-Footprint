@@ -1061,6 +1061,17 @@ button:hover svg {
   }
 }
 
+/* Mobile profile icon on header */
+.mobile-profile-btn {
+  display: none !important;
+}
+
+@media (max-width: 1024px) {
+  .mobile-profile-btn {
+    display: flex !important;
+  }
+}
+
 /* Centered profile dropdown/avatar selector on mobile */
 .profile-dropdown-menu {
   position: absolute;

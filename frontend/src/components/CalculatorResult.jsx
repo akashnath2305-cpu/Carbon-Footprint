@@ -140,10 +140,10 @@ export default function CalculatorResult({ result, onFinish }) {
         <h3 style={{ fontSize: '20px', color: '#ffffff', marginBottom: '24px', fontFamily: "'Playfair Display', serif" }}>Improvements Over Time</h3>
         <div style={{ flex: 1, minHeight: 0 }}>
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={trendData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+            <LineChart data={trendData} margin={{ top: 5, right: 10, bottom: 5, left: -25 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
               <XAxis dataKey="month" stroke="rgba(255,255,255,0.5)" tick={{fill: 'rgba(255,255,255,0.5)', fontSize: 12}} dy={10} />
-              <YAxis stroke="rgba(255,255,255,0.5)" tick={{fill: 'rgba(255,255,255,0.5)', fontSize: 12}} domain={['auto', 'auto']} />
+              <YAxis stroke="rgba(255,255,255,0.5)" tick={{fill: 'rgba(255,255,255,0.5)', fontSize: 12}} domain={['auto', 'auto']} width={35} />
               <RechartsTooltip 
                 contentStyle={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff' }}
                 itemStyle={{ color: '#4ade80', fontWeight: 'bold' }}
