@@ -10,6 +10,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { getPersonalizedInsights, calculateDynamicFootprint } from './gemini.js';
 import { calculateEmissions } from './utils/emissions.js';
+import { authenticateToken, globalErrorHandler } from './utils/middleware.js';
 
 dotenv.config();
 
@@ -62,20 +63,7 @@ const apiLimiter = rateLimit({
 
 app.use('/api/', apiLimiter);
 
-// Authentication Middleware
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
-
-  if (!token) return res.status(401).json({ error: 'Access denied. No token provided.' });
-
-  // Harden token verification by explicitly checking the signature algorithm
-  jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] }, (err, user) => {
-    if (err) return res.status(403).json({ error: 'Invalid token.' });
-    req.user = user;
-    next();
-  });
-}
+// Authentication Middleware is imported from utils/middleware.js
 
 // --- AUTHENTICATION ROUTES ---
 
@@ -420,11 +408,14 @@ app.delete('/api/history/:id', authenticateToken, async (req, res) => {
   }
 });
 
+// Global error handler
+app.use(globalErrorHandler);
+
 // Initialize database if needed before starting server
 const initializeDB = async () => {
   try {
     const res = await pool.query("SELECT to_regclass('public.users') as table_exists");
-    if (!res.rows[0].table_exists) {
+    if (!res.rows[0]?.table_exists) {
       console.log('Database not initialized. Running initialization script...');
       const sql = fs.readFileSync('db_init.sql', 'utf8');
       await pool.query(sql);
@@ -437,8 +428,12 @@ const initializeDB = async () => {
   }
 };
 
-initializeDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Backend server running on http://localhost:${PORT}`);
+if (process.env.NODE_ENV !== 'test') {
+  initializeDB().then(() => {
+    app.listen(PORT, () => {
+      console.log(`Backend server running on http://localhost:${PORT}`);
+    });
   });
-});
+}
+
+export default app;
