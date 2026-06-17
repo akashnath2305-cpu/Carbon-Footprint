@@ -106,8 +106,9 @@ export default function LoginView({ onLogin, initialIsSignUp = false }) {
           
           {isSignUp && (
             <div style={{ textAlign: 'left' }}>
-              <label style={{ fontSize: '14px', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>Email Address</label>
+              <label htmlFor="email" style={{ fontSize: '14px', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>Email Address</label>
               <input 
+                id="email"
                 type="email" 
                 required 
                 value={email}
@@ -120,10 +121,11 @@ export default function LoginView({ onLogin, initialIsSignUp = false }) {
           )}
 
           <div style={{ textAlign: 'left' }}>
-            <label style={{ fontSize: '14px', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>
+            <label htmlFor="username" style={{ fontSize: '14px', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>
               {isSignUp ? 'Username' : 'Username / Email'}
             </label>
             <input 
+              id="username"
               type="text" 
               required 
               value={username}
@@ -135,9 +137,10 @@ export default function LoginView({ onLogin, initialIsSignUp = false }) {
           </div>
 
           <div style={{ textAlign: 'left' }}>
-            <label style={{ fontSize: '14px', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>Password</label>
+            <label htmlFor="password" style={{ fontSize: '14px', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>Password</label>
             <div style={{ position: 'relative' }}>
               <input 
+                id="password"
                 type={showPassword ? "text" : "password"} 
                 required 
                 value={password}
@@ -148,6 +151,7 @@ export default function LoginView({ onLogin, initialIsSignUp = false }) {
               />
               <button 
                 type="button"
+                aria-label={showPassword ? "Hide password" : "Show password"}
                 onClick={() => setShowPassword(!showPassword)}
                 style={{ 
                   position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)',

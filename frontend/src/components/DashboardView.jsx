@@ -591,6 +591,7 @@ export default function DashboardView({ initialTab, dashboardData, onLogAdded, o
 
                     <div style={{ position: 'relative' }}>
                       <input 
+                        aria-label="Amount to log"
                         type="number" 
                         step="any"
                         placeholder="Amount"

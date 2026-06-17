@@ -266,7 +266,7 @@ export default function CalculatorWizard({ onSubmit, onCancel }) {
                 <div className="visual-card-icon" style={{ background: '#f3e8ff', color: '#7e22ce' }}><TooltipIcon name="Train" size={56} /></div>
                 <div className="visual-card-title">Travel by Train</div>
                 <div className="visual-card-subtitle">(in km)</div>
-                <input type="number" min="0" className="visual-input-yellow" placeholder="000" value={publicTravel.train} onChange={e => setPublicTravel({...publicTravel, train: e.target.value})} />
+                <input id="public-travel-train" aria-label="Distance travelled by train in kilometers" type="number" min="0" className="visual-input-yellow" placeholder="000" value={publicTravel.train} onChange={e => setPublicTravel({...publicTravel, train: e.target.value})} />
               </div>
 
               <div className="visual-card">
@@ -274,7 +274,7 @@ export default function CalculatorWizard({ onSubmit, onCancel }) {
                 <div className="visual-card-icon" style={{ background: '#fef2f2', color: '#b91c1c' }}><TooltipIcon name="Bus" size={56} /></div>
                 <div className="visual-card-title">Bus Travel</div>
                 <div className="visual-card-subtitle">(in km)</div>
-                <input type="number" min="0" className="visual-input-yellow" placeholder="000" value={publicTravel.bus} onChange={e => setPublicTravel({...publicTravel, bus: e.target.value})} />
+                <input id="public-travel-bus" aria-label="Distance travelled by bus in kilometers" type="number" min="0" className="visual-input-yellow" placeholder="000" value={publicTravel.bus} onChange={e => setPublicTravel({...publicTravel, bus: e.target.value})} />
               </div>
 
               <div className="visual-card">
@@ -282,7 +282,7 @@ export default function CalculatorWizard({ onSubmit, onCancel }) {
                 <div className="visual-card-icon" style={{ background: '#f0fdf4', color: '#15803d' }}><TooltipIcon name="Bus" size={56} /></div>
                 <div className="visual-card-title">Electric Bus Travel</div>
                 <div className="visual-card-subtitle">(in km)</div>
-                <input type="number" min="0" className="visual-input-yellow" placeholder="000" value={publicTravel.ebus} onChange={e => setPublicTravel({...publicTravel, ebus: e.target.value})} />
+                <input id="public-travel-ebus" aria-label="Distance travelled by electric bus in kilometers" type="number" min="0" className="visual-input-yellow" placeholder="000" value={publicTravel.ebus} onChange={e => setPublicTravel({...publicTravel, ebus: e.target.value})} />
               </div>
 
               <div className="visual-card">
@@ -290,7 +290,7 @@ export default function CalculatorWizard({ onSubmit, onCancel }) {
                 <div className="visual-card-icon" style={{ background: '#fffbeb', color: '#b45309' }}><TooltipIcon name="Car" size={56} /></div>
                 <div className="visual-card-title">Cab/Taxi Travel</div>
                 <div className="visual-card-subtitle">(in km)</div>
-                <input type="number" min="0" className="visual-input-yellow" placeholder="000" value={publicTravel.cab} onChange={e => setPublicTravel({...publicTravel, cab: e.target.value})} />
+                <input id="public-travel-cab" aria-label="Distance travelled by cab in kilometers" type="number" min="0" className="visual-input-yellow" placeholder="000" value={publicTravel.cab} onChange={e => setPublicTravel({...publicTravel, cab: e.target.value})} />
               </div>
 
               <div className="visual-card">
@@ -298,7 +298,7 @@ export default function CalculatorWizard({ onSubmit, onCancel }) {
                 <div className="visual-card-icon" style={{ background: '#dcfce7', color: '#166534' }}><TooltipIcon name="Car" size={56} /></div>
                 <div className="visual-card-title">Electric Cab/Taxi</div>
                 <div className="visual-card-subtitle">(in km)</div>
-                <input type="number" min="0" className="visual-input-yellow" placeholder="000" value={publicTravel.ecab} onChange={e => setPublicTravel({...publicTravel, ecab: e.target.value})} />
+                <input id="public-travel-ecab" aria-label="Distance travelled by electric cab in kilometers" type="number" min="0" className="visual-input-yellow" placeholder="000" value={publicTravel.ecab} onChange={e => setPublicTravel({...publicTravel, ecab: e.target.value})} />
               </div>
             </div>
 
@@ -334,7 +334,7 @@ export default function CalculatorWizard({ onSubmit, onCancel }) {
                 <div className="visual-card-icon" style={{ background: '#fee2e2', color: '#b91c1c' }}><TooltipIcon name="Flame" size={56} /></div>
                 <div className="visual-card-title">LNG/CNG Consumption</div>
                 <div className="visual-card-subtitle">(in kg)</div>
-                <input type="number" min="0" className="visual-input-yellow" placeholder="000" value={homeFuel.lng} onChange={e => setHomeFuel({...homeFuel, lng: e.target.value})} />
+                <input id="home-fuel-lng" aria-label="LNG or CNG consumption in kilograms" type="number" min="0" className="visual-input-yellow" placeholder="000" value={homeFuel.lng} onChange={e => setHomeFuel({...homeFuel, lng: e.target.value})} />
               </div>
 
               <div className="visual-card">
@@ -342,7 +342,7 @@ export default function CalculatorWizard({ onSubmit, onCancel }) {
                 <div className="visual-card-icon" style={{ background: '#f1f5f9', color: '#334155' }}><TooltipIcon name="Box" size={56} /></div>
                 <div className="visual-card-title">Coal Consumption</div>
                 <div className="visual-card-subtitle">(in kg)</div>
-                <input type="number" min="0" className="visual-input-yellow" placeholder="000" value={homeFuel.coal} onChange={e => setHomeFuel({...homeFuel, coal: e.target.value})} />
+                <input id="home-fuel-coal" aria-label="Coal consumption in kilograms" type="number" min="0" className="visual-input-yellow" placeholder="000" value={homeFuel.coal} onChange={e => setHomeFuel({...homeFuel, coal: e.target.value})} />
               </div>
 
               <div className="visual-card">
@@ -350,7 +350,7 @@ export default function CalculatorWizard({ onSubmit, onCancel }) {
                 <div className="visual-card-icon" style={{ background: '#e2e8f0', color: '#475569' }}><TooltipIcon name="Boxes" size={56} /></div>
                 <div className="visual-card-title">Coke Consumption</div>
                 <div className="visual-card-subtitle">(in kg)</div>
-                <input type="number" min="0" className="visual-input-yellow" placeholder="000" value={homeFuel.coke} onChange={e => setHomeFuel({...homeFuel, coke: e.target.value})} />
+                <input id="home-fuel-coke" aria-label="Coke consumption in kilograms" type="number" min="0" className="visual-input-yellow" placeholder="000" value={homeFuel.coke} onChange={e => setHomeFuel({...homeFuel, coke: e.target.value})} />
               </div>
             </div>
 
@@ -386,7 +386,7 @@ export default function CalculatorWizard({ onSubmit, onCancel }) {
                 <div className="visual-card-icon" style={{ background: '#fef2f2', color: '#ef4444' }}><TooltipIcon name="Fuel" size={56} /></div>
                 <div className="visual-card-title">Petrol Consumption</div>
                 <div className="visual-card-subtitle">(in liters)</div>
-                <input type="number" min="0" className="visual-input-yellow" placeholder="000" value={vehicleFuel.petrol} onChange={e => setVehicleFuel({...vehicleFuel, petrol: e.target.value})} />
+                <input id="vehicle-fuel-petrol" aria-label="Petrol consumption in liters" type="number" min="0" className="visual-input-yellow" placeholder="000" value={vehicleFuel.petrol} onChange={e => setVehicleFuel({...vehicleFuel, petrol: e.target.value})} />
               </div>
 
               <div className="visual-card">
@@ -394,7 +394,7 @@ export default function CalculatorWizard({ onSubmit, onCancel }) {
                 <div className="visual-card-icon" style={{ background: '#fefce8', color: '#eab308' }}><TooltipIcon name="Fuel" size={56} /></div>
                 <div className="visual-card-title">Diesel Consumption</div>
                 <div className="visual-card-subtitle">(in liters)</div>
-                <input type="number" min="0" className="visual-input-yellow" placeholder="000" value={vehicleFuel.diesel} onChange={e => setVehicleFuel({...vehicleFuel, diesel: e.target.value})} />
+                <input id="vehicle-fuel-diesel" aria-label="Diesel consumption in liters" type="number" min="0" className="visual-input-yellow" placeholder="000" value={vehicleFuel.diesel} onChange={e => setVehicleFuel({...vehicleFuel, diesel: e.target.value})} />
               </div>
 
               <div className="visual-card">
@@ -402,7 +402,7 @@ export default function CalculatorWizard({ onSubmit, onCancel }) {
                 <div className="visual-card-icon" style={{ background: '#f0fdf4', color: '#22c55e' }}><TooltipIcon name="Fuel" size={56} /></div>
                 <div className="visual-card-title">LPG/CNG Consumption</div>
                 <div className="visual-card-subtitle">(in liters)</div>
-                <input type="number" min="0" className="visual-input-yellow" placeholder="000" value={vehicleFuel.cng} onChange={e => setVehicleFuel({...vehicleFuel, cng: e.target.value})} />
+                <input id="vehicle-fuel-cng" aria-label="LPG or CNG consumption in liters" type="number" min="0" className="visual-input-yellow" placeholder="000" value={vehicleFuel.cng} onChange={e => setVehicleFuel({...vehicleFuel, cng: e.target.value})} />
               </div>
             </div>
 
@@ -438,7 +438,7 @@ export default function CalculatorWizard({ onSubmit, onCancel }) {
                 <div className="visual-card-icon" style={{ background: '#fef9c3', color: '#a16207' }}><TooltipIcon name="Zap" size={56} /></div>
                 <div className="visual-card-title">Monthly Electricity</div>
                 <div className="visual-card-subtitle">(in kWh)</div>
-                <input type="number" min="0" className="visual-input-yellow" placeholder="000" value={electricity.kwh} onChange={e => setElectricity({...electricity, kwh: e.target.value})} />
+                <input id="electricity-kwh" aria-label="Monthly electricity consumption in kilowatt hours" type="number" min="0" className="visual-input-yellow" placeholder="000" value={electricity.kwh} onChange={e => setElectricity({...electricity, kwh: e.target.value})} />
               </div>
             </div>
 
@@ -474,7 +474,7 @@ export default function CalculatorWizard({ onSubmit, onCancel }) {
                 <div className="visual-card-icon" style={{ background: '#e0f2fe', color: '#0369a1' }}><TooltipIcon name="Plane" size={56} /></div>
                 <div className="visual-card-title">Short-Haul Flights</div>
                 <div className="visual-card-subtitle">(under 3 hours)</div>
-                <input type="number" min="0" className="visual-input-yellow" placeholder="0" value={flights.short} onChange={e => setFlights({...flights, short: e.target.value})} />
+                <input id="flights-short" aria-label="Number of short haul flights" type="number" min="0" className="visual-input-yellow" placeholder="0" value={flights.short} onChange={e => setFlights({...flights, short: e.target.value})} />
               </div>
 
               <div className="visual-card" style={{ maxWidth: '300px' }}>
@@ -482,7 +482,7 @@ export default function CalculatorWizard({ onSubmit, onCancel }) {
                 <div className="visual-card-icon" style={{ background: '#dbeafe', color: '#1d4ed8' }}><TooltipIcon name="Plane" size={56} /></div>
                 <div className="visual-card-title">Long-Haul Flights</div>
                 <div className="visual-card-subtitle">(over 3 hours)</div>
-                <input type="number" min="0" className="visual-input-yellow" placeholder="0" value={flights.long} onChange={e => setFlights({...flights, long: e.target.value})} />
+                <input id="flights-long" aria-label="Number of long haul flights" type="number" min="0" className="visual-input-yellow" placeholder="0" value={flights.long} onChange={e => setFlights({...flights, long: e.target.value})} />
               </div>
             </div>
 
