@@ -36,7 +36,9 @@ import {
   BellRing,
   FileText,
   TreePine,
-  Newspaper
+  Newspaper,
+  Info,
+  CheckCircle
 } from 'lucide-react';
 
 const iconsMap = {
@@ -76,7 +78,9 @@ const iconsMap = {
   BellRing,
   FileText,
   TreePine,
-  Newspaper
+  Newspaper,
+  Info,
+  CheckCircle
 };
 
 export default function TooltipIcon({ name, tooltipText, size = 20, className = '', style = {} }) {

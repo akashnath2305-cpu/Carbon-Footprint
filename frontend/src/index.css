@@ -1093,13 +1093,13 @@ button:hover svg {
 @media (max-width: 768px) {
   .profile-dropdown-menu {
     position: fixed !important;
-    top: 50% !important;
-    left: 50% !important;
-    right: auto !important;
-    transform: translate(-50%, -50%) !important;
+    top: 70px !important;
+    right: 16px !important;
+    left: auto !important;
+    transform: none !important;
     margin-top: 0 !important;
     z-index: 10010 !important;
-    box-shadow: 0 0 0 100vw rgba(0, 0, 0, 0.75), 0 8px 32px rgba(0,0,0,0.5) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8) !important;
   }
 }
 

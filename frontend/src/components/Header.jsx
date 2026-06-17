@@ -9,17 +9,14 @@ export default function Header({ currentUser, dashboardData, onLoginClick, onCre
   const recentLogs = dashboardData?.recentLogs || [];
   
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [isSelectingAvatar, setIsSelectingAvatar] = useState(false);
-  const [isUpdatingAvatar, setIsUpdatingAvatar] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
   const profileRef = useRef(null);
 
   useEffect(() => {
     function handleClickOutside(event) {
-      if (profileRef.current && !profileRef.current.contains(event.target)) {
+      if (profileRef.current && !profileRef.current.contains(event.target) && !event.target.closest('.mobile-profile-btn') && !event.target.closest('.mobile-sidebar')) {
         setIsProfileOpen(false);
-        setIsSelectingAvatar(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -28,28 +25,7 @@ export default function Header({ currentUser, dashboardData, onLoginClick, onCre
     };
   }, []);
 
-  const handleAvatarChange = async (url) => {
-    setIsUpdatingAvatar(true);
-    try {
-      const res = await fetch('/api/auth/avatar', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ avatar_url: url })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        login(data.user, token);
-        setIsSelectingAvatar(false);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsUpdatingAvatar(false);
-    }
-  };
+
 
   return (
     <>
@@ -118,17 +94,20 @@ export default function Header({ currentUser, dashboardData, onLoginClick, onCre
             ))}
           </nav>
         )}
-        <div className="hide-on-mobile" style={{ display: 'flex', gap: '24px', alignItems: 'center', color: 'var(--text-primary)' }}>
+        <div style={{ display: 'flex', gap: '24px', alignItems: 'center', color: 'var(--text-primary)' }}>
           {currentUser ? (
             <div ref={profileRef} style={{ display: 'flex', alignItems: 'center', gap: '16px', position: 'relative' }}>
               <div 
+                className="hide-on-mobile"
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
                 style={{ 
                   display: 'flex', alignItems: 'center', gap: '12px', background: isProfileOpen ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.3)', padding: '8px 20px', borderRadius: '30px', border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', transition: 'background 0.2s'
                 }}
               >
                 {currentUser?.avatar_url ? (
-                  <img src={currentUser.avatar_url} alt="avatar" style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', background: '#fff' }} />
+                  <div style={{ width: '24px', height: '24px', borderRadius: '50%', overflow: 'hidden', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <img src={currentUser.avatar_url} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover', transform: currentUser?.avatar_url.includes('/avatars/') ? 'scale(1.3)' : 'none' }} />
+                  </div>
                 ) : (
                   <TooltipIcon name="User" size={20} style={{ color: 'var(--accent-emerald)' }} />
                 )}
@@ -137,70 +116,51 @@ export default function Header({ currentUser, dashboardData, onLoginClick, onCre
 
               {isProfileOpen && (
                 <div className="animate-slide-up profile-dropdown-menu">
-                  {isSelectingAvatar ? (
-                    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                      <h3 style={{ color: '#fff', margin: '0 0 16px 0' }}>Choose Avatar</h3>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
-                        {['/avatars/avatar1.png', '/avatars/avatar2.png', '/avatars/avatar3.png', '/avatars/avatar4.png'].map(url => (
-                          <img 
-                            key={url}
-                            src={url} 
-                            alt="avatar option" 
-                            onClick={() => !isUpdatingAvatar && handleAvatarChange(url)}
-                            style={{ 
-                              width: '60px', height: '60px', borderRadius: '50%', cursor: 'pointer', objectFit: 'cover', background: '#fff',
-                              border: currentUser?.avatar_url === url ? '3px solid var(--accent-emerald)' : '3px solid transparent',
-                              opacity: isUpdatingAvatar ? 0.5 : 1,
-                              transition: 'transform 0.2s'
-                            }}
-                            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-                            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                          />
-                        ))}
-                      </div>
-                      <button onClick={() => setIsSelectingAvatar(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '12px' }}>Cancel</button>
+                  <div style={{ 
+                    position: 'relative', 
+                    width: '80px', 
+                    height: '80px', 
+                    margin: '0 auto 16px auto', 
+                    borderRadius: '50%', 
+                    overflow: 'hidden', 
+                    border: '3px solid var(--accent-emerald)', 
+                    background: '#fff',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                  }}>
+                    {currentUser?.avatar_url ? (
+                      <img 
+                        src={currentUser.avatar_url} 
+                        alt="Profile" 
+                        style={{ 
+                          width: '100%', 
+                          height: '100%', 
+                          objectFit: 'cover',
+                          transform: currentUser?.avatar_url.includes('/avatars/') ? 'scale(1.3)' : 'none'
+                        }} 
+                      />
+                    ) : (
+                      <TooltipIcon name="User" size={32} style={{ color: 'var(--accent-emerald)' }} />
+                    )}
+                  </div>
+                  <h3 style={{ margin: '0 0 4px 0', fontSize: '20px', color: '#fff' }}>{currentUser?.username || 'Eco Warrior'}</h3>
+                  <p style={{ margin: '0 0 20px 0', fontSize: '13px', color: '#fff' }}>{currentUser?.email || 'user@example.com'}</p>
+                  
+                  <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', padding: '12px 20px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px' }}>
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase' }}>Emissions</div>
+                      <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--accent-emerald)' }}>{Math.round(totalEmissions)} kg</div>
                     </div>
-                  ) : (
-                    <>
-                      <div style={{ position: 'relative' }}>
-                        {currentUser?.avatar_url ? (
-                          <img src={currentUser.avatar_url} alt="Profile" className="profile-dropdown-avatar" />
-                        ) : (
-                          <div className="profile-dropdown-placeholder">
-                            <TooltipIcon name="User" size={32} style={{ color: '#fff' }} />
-                          </div>
-                        )}
-                        <button 
-                          className="profile-edit-btn"
-                          onClick={() => setIsSelectingAvatar(true)}
-                          title="Change Avatar"
-                          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-                          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                        >
-                          <TooltipIcon name="Edit2" size={14} />
-                        </button>
-                      </div>
-                      <h3 style={{ margin: '0 0 4px 0', fontSize: '20px', color: '#fff' }}>{currentUser?.username || 'Eco Warrior'}</h3>
-                      <p style={{ margin: '0 0 20px 0', fontSize: '13px', color: '#fff' }}>{currentUser?.email || 'user@example.com'}</p>
-                      
-                      <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', padding: '12px 20px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px' }}>
-                        <div style={{ textAlign: 'center' }}>
-                          <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase' }}>Emissions</div>
-                          <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--accent-emerald)' }}>{Math.round(totalEmissions)} kg</div>
-                        </div>
-                        <div style={{ textAlign: 'center' }}>
-                          <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase' }}>Pending Pts</div>
-                          <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#fbbf24' }}>{currentUser?.pending_points || 0}</div>
-                        </div>
-                        <div style={{ textAlign: 'center' }}>
-                          <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase' }}>Logs</div>
-                          <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#60a5fa' }}>{recentLogs?.length || 0}</div>
-                        </div>
-                      </div>
-                      
-
-                    </>
-                  )}
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase' }}>Pending Pts</div>
+                      <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#fbbf24' }}>{currentUser?.pending_points || 0}</div>
+                    </div>
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase' }}>Logs</div>
+                      <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#60a5fa' }}>{recentLogs?.length || 0}</div>
+                    </div>
+                  </div>
                 </div>
               )}
 
@@ -227,7 +187,7 @@ export default function Header({ currentUser, dashboardData, onLoginClick, onCre
               </button>
             </div>
           ) : (
-            <>
+            <div className="hide-on-mobile" style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
               <button 
                 onClick={onLoginClick}
                 style={{ background: 'none', border: 'none', color: '#e2e8f0', cursor: 'pointer', fontWeight: 600, fontSize: '15px' }}
@@ -243,7 +203,7 @@ export default function Header({ currentUser, dashboardData, onLoginClick, onCre
               >
                 Get Started
               </button>
-            </>
+            </div>
           )}
         </div>
 
@@ -271,7 +231,9 @@ export default function Header({ currentUser, dashboardData, onLoginClick, onCre
             title="Open Profile"
           >
             {currentUser?.avatar_url ? (
-              <img src={currentUser.avatar_url} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover', background: '#fff' }} />
+              <div style={{ width: '100%', height: '100%', borderRadius: '50%', overflow: 'hidden', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <img src={currentUser.avatar_url} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover', transform: currentUser?.avatar_url.includes('/avatars/') ? 'scale(1.3)' : 'none' }} />
+              </div>
             ) : (
               <div style={{ color: '#fff', fontSize: '14px', fontWeight: 'bold' }}>
                 {currentUser?.username ? currentUser.username[0].toUpperCase() : 'U'}
@@ -353,9 +315,7 @@ export default function Header({ currentUser, dashboardData, onLoginClick, onCre
           {currentUser ? (
             <>
               <div 
-                onClick={() => { setIsProfileOpen(true); setIsSelectingAvatar(true); }}
-                style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: 'auto', cursor: 'pointer' }}
-                title="Change Avatar"
+                style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: 'auto' }}
               >
                 {currentUser?.avatar_url ? (
                   <img src={currentUser.avatar_url} alt="Profile" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--accent-emerald)' }} />
@@ -367,7 +327,6 @@ export default function Header({ currentUser, dashboardData, onLoginClick, onCre
                 <div>
                   <div style={{ color: '#fff', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px' }}>
                     {currentUser.username || 'Eco Warrior'}
-                    <TooltipIcon name="Edit2" size={12} style={{ opacity: 0.6 }} />
                   </div>
                   <div style={{ color: 'var(--accent-emerald)', fontSize: '12px' }}>{Math.round(totalEmissions || 0)} kg CO2</div>
                 </div>

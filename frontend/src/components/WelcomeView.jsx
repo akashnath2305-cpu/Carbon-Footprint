@@ -96,7 +96,7 @@ export default function WelcomeView({ currentUser, dashboardData, onLoginClick, 
             Welcome to the future of sustainability
           </p>
           
-          <h1 className="welcome-title" style={{ lineHeight: 1.2, marginBottom: '24px', maxWidth: '800px', margin: '0 auto 24px', color: 'var(--text-primary)', minHeight: '116px' }}>
+          <h1 className="welcome-title" style={{ lineHeight: 1.2, maxWidth: '800px', margin: '0 auto 8px auto', color: 'var(--text-primary)', minHeight: '2.4em' }}>
             Calculate Your Impact On <br/>
             <span className="typing-text typing-cursor" style={{ color: 'var(--accent-emerald)', fontWeight: 800 }}>
               {phrases[phraseIdx].substring(0, charIdx)}
