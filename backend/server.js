@@ -26,8 +26,9 @@ const JWT_SECRET = process.env.JWT_SECRET || 'carbon_footprint_super_secret_key'
 app.use(helmet());
 
 // Secure CORS configuration to restrict allowed origins
-const allowedOrigins = process.env.ALLOWED_ORIGINS 
-  ? process.env.ALLOWED_ORIGINS.split(',') 
+// console.log(process.env.ALLOWED_ORIGINS.split(','))
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim())
   : ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:5000'];
 
 app.use(cors({
@@ -92,7 +93,7 @@ app.post('/api/auth/register', authLimiter, async (req, res) => {
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    const avatarUrl = `https://api.dicebear.com/7.x/bottts/svg?seed=${username}`;
+    const avatarUrl = `/avatars/avatar1.png`;
 
     const newUser = await pool.query(
       'INSERT INTO users (username, email, password, avatar_url) VALUES ($1, $2, $3, $4) RETURNING id, username, email, avatar_url, total_points, used_points, pending_points',
@@ -123,7 +124,7 @@ app.post('/api/auth/login', authLimiter, async (req, res) => {
     if (!validPassword) return res.status(401).json({ error: 'Invalid credentials.' });
 
     const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '24h' });
-    
+
     // Remove password before sending to client
     delete user.password;
     res.json({ token, user });
@@ -133,58 +134,42 @@ app.post('/api/auth/login', authLimiter, async (req, res) => {
   }
 });
 
-// PUT /api/auth/avatar - Update user avatar
-app.put('/api/auth/avatar', authenticateToken, async (req, res) => {
-  const userId = req.user.id;
-  const { avatar_url } = req.body;
-  if (!avatar_url) return res.status(400).json({ error: 'avatar_url required.' });
-  try {
-    const updateResult = await pool.query(
-      'UPDATE users SET avatar_url = $1 WHERE id = $2 RETURNING id, username, email, avatar_url',
-      [avatar_url, userId]
-    );
-    if (updateResult.rows.length === 0) return res.status(404).json({ error: 'User not found.' });
-    res.json({ user: updateResult.rows[0] });
-  } catch (err) {
-    console.error('Update avatar error:', err);
-    res.status(500).json({ error: 'Database error updating avatar.' });
-  }
-});
+
 
 // PUT /api/rewards/use - Use reward points
 app.put('/api/rewards/use', authenticateToken, async (req, res) => {
   const userId = req.user.id;
   const points = parseInt(req.body.points, 10);
-  
+
   if (isNaN(points) || points <= 0) {
     return res.status(400).json({ error: 'Valid points amount required.' });
   }
-  
+
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
-    
+
     // Use FOR UPDATE to lock the row and prevent race conditions during redemption
     const userResult = await client.query('SELECT total_points, used_points FROM users WHERE id = $1 FOR UPDATE', [userId]);
     if (userResult.rows.length === 0) {
       await client.query('ROLLBACK');
       return res.status(404).json({ error: 'User not found.' });
     }
-    
+
     const total = parseInt(userResult.rows[0].total_points || 0, 10);
     const used = parseInt(userResult.rows[0].used_points || 0, 10);
     const available = total - used;
-    
+
     if (available < points) {
       await client.query('ROLLBACK');
       return res.status(400).json({ error: 'Not enough points.' });
     }
-    
+
     const updateResult = await client.query(
       'UPDATE users SET used_points = used_points + $1 WHERE id = $2 RETURNING total_points, used_points',
       [points, userId]
     );
-    
+
     await client.query('COMMIT');
     res.json(updateResult.rows[0]);
   } catch (err) {
@@ -200,18 +185,18 @@ app.put('/api/rewards/use', authenticateToken, async (req, res) => {
 app.put('/api/rewards/earn', authenticateToken, async (req, res) => {
   const userId = req.user.id;
   const points = parseInt(req.body.points, 10);
-  
+
   if (isNaN(points) || points <= 0) {
     return res.status(400).json({ error: 'Valid points amount required.' });
   }
-  
+
   try {
     const updateResult = await pool.query(
       'UPDATE users SET total_points = total_points + $1 WHERE id = $2 RETURNING total_points',
       [points, userId]
     );
     if (updateResult.rows.length === 0) return res.status(404).json({ error: 'User not found.' });
-    
+
     res.json(updateResult.rows[0]);
   } catch (err) {
     console.error('Earn points error:', err);
@@ -224,14 +209,14 @@ app.put('/api/campaigns/join', authenticateToken, async (req, res) => {
   const userId = req.user.id;
   const { points } = req.body;
   if (!points || points <= 0) return res.status(400).json({ error: 'Valid points amount required.' });
-  
+
   try {
     const updateResult = await pool.query(
       'UPDATE users SET pending_points = pending_points + $1 WHERE id = $2 RETURNING pending_points',
       [points, userId]
     );
     if (updateResult.rows.length === 0) return res.status(404).json({ error: 'User not found.' });
-    
+
     res.json(updateResult.rows[0]);
   } catch (err) {
     console.error('Join campaign error:', err);
@@ -381,7 +366,7 @@ app.post('/api/calculate-footprint', authenticateToken, async (req, res) => {
     for (const item of result.breakdown) {
       let cat = item.name.toLowerCase();
       if (cat === 'transport') cat = 'transportation';
-      
+
       await pool.query(
         `INSERT INTO carbon_logs (user_id, category, sub_category, input_value, unit, carbon_emissions, logged_at, session_id, details)
          VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP, $7, $8)`,
@@ -415,19 +400,19 @@ app.get('/api/history', authenticateToken, async (req, res) => {
 app.delete('/api/history/:id', authenticateToken, async (req, res) => {
   const userId = req.user.id;
   const logId = req.params.id;
-  
+
   try {
     // Check if it's part of a session
     const logCheck = await pool.query('SELECT session_id FROM carbon_logs WHERE id = $1 AND user_id = $2', [logId, userId]);
     if (logCheck.rows.length === 0) return res.status(404).json({ error: 'Log not found' });
-    
+
     const sessionId = logCheck.rows[0].session_id;
     if (sessionId) {
       await pool.query('DELETE FROM carbon_logs WHERE session_id = $1 AND user_id = $2', [sessionId, userId]);
     } else {
       await pool.query('DELETE FROM carbon_logs WHERE id = $1 AND user_id = $2', [logId, userId]);
     }
-    
+
     res.json({ message: 'Log deleted successfully' });
   } catch (error) {
     console.error('Error deleting history:', error);
