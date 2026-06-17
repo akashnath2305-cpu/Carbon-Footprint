@@ -13,13 +13,38 @@ import { calculateEmissions } from './utils/emissions.js';
 
 dotenv.config();
 
+// Secure secret configuration check in production environments
+if (process.env.NODE_ENV === 'production' && (!process.env.JWT_SECRET || process.env.JWT_SECRET === 'carbon_footprint_super_secret_key')) {
+  console.error('FATAL SECURITY ERROR: JWT_SECRET environment variable is missing or insecure in production!');
+  process.exit(1);
+}
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || 'carbon_footprint_super_secret_key';
 
 app.use(helmet());
-app.use(cors());
-app.use(express.json());
+
+// Secure CORS configuration to restrict allowed origins
+const allowedOrigins = process.env.ALLOWED_ORIGINS 
+  ? process.env.ALLOWED_ORIGINS.split(',') 
+  : ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:5000'];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // allow requests with no origin (like mobile apps, curl, or postman)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true
+}));
+
+// Restrict request body size to protect against body-parser Denial of Service (DoS) attacks
+app.use(express.json({ limit: '10kb' }));
 
 // Rate limiting configurations
 const authLimiter = rateLimit({
@@ -43,7 +68,8 @@ function authenticateToken(req, res, next) {
 
   if (!token) return res.status(401).json({ error: 'Access denied. No token provided.' });
 
-  jwt.verify(token, JWT_SECRET, (err, user) => {
+  // Harden token verification by explicitly checking the signature algorithm
+  jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] }, (err, user) => {
     if (err) return res.status(403).json({ error: 'Invalid token.' });
     req.user = user;
     next();
