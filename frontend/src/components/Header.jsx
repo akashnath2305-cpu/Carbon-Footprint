@@ -279,6 +279,25 @@ export default function Header({ currentUser, dashboardData, onLoginClick, onCre
             )}
           </button>
         )}
+
+        {!currentUser && (
+          <button 
+            className="mobile-login-btn skeuo-button"
+            onClick={onLoginClick}
+            style={{
+              padding: '8px 18px',
+              borderRadius: '20px',
+              fontWeight: 600,
+              fontSize: '14px',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              flexShrink: 0
+            }}
+          >
+            Log In
+          </button>
+        )}
       </header>
 
       {/* Mobile Sidebar overlay */}

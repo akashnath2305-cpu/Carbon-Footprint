@@ -107,23 +107,13 @@ export default function WelcomeView({ currentUser, dashboardData, onLoginClick, 
             Track your personal carbon emissions across transportation, diet, and household utilities. Let our AI tailor a roadmap to lower your footprint and join a community making real-world change.
           </p>
 
-          {currentUser ? (
-            <button 
-              className="skeuo-button pulse-glow" 
-              style={{ borderRadius: '30px', padding: '16px 48px', letterSpacing: '2px', fontSize: '18px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '10px', margin: '0 auto' }}
-              onClick={onProceed}
-            >
-              <Play size={20} /> START JOURNEY
-            </button>
-          ) : (
-            <button 
-              className="skeuo-button pulse-glow" 
-              style={{ padding: '14px 32px', borderRadius: '12px', fontSize: '16px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '10px', margin: '0 auto' }}
-              onClick={onCreateAccountClick}
-            >
-              <UserPlus size={18} /> Create Account
-            </button>
-          )}
+          <button 
+            className="skeuo-button pulse-glow" 
+            style={{ borderRadius: '30px', padding: '16px 48px', letterSpacing: '2px', fontSize: '18px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '10px', margin: '0 auto' }}
+            onClick={currentUser ? onProceed : onLoginClick}
+          >
+            <Play size={20} /> START JOURNEY
+          </button>
         </div>
 
         {/* Quote Carousel Section */}

@@ -28,6 +28,11 @@ export default function LoginView({ onLogin, initialIsSignUp = false }) {
         body: JSON.stringify(bodyData)
       });
       
+      const contentType = res.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error('Unable to connect to the authentication server. Please check if the backend is running.');
+      }
+
       const data = await res.json();
       
       if (!res.ok) {

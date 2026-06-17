@@ -1061,13 +1061,13 @@ button:hover svg {
   }
 }
 
-/* Mobile profile icon on header */
-.mobile-profile-btn {
+/* Mobile profile icon and login button on header */
+.mobile-profile-btn, .mobile-login-btn {
   display: none !important;
 }
 
 @media (max-width: 1024px) {
-  .mobile-profile-btn {
+  .mobile-profile-btn, .mobile-login-btn {
     display: flex !important;
   }
 }

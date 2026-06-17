@@ -18,7 +18,21 @@ export default defineConfig(({ mode }) => {
             if (id.includes('node_modules')) {
               if (id.includes('recharts')) return 'charts';
               if (id.includes('lucide-react')) return 'icons';
-              if (id.includes('react') || id.includes('react-dom')) return 'vendor';
+              if (
+                id.includes('react-globe.gl') || 
+                id.includes('three') || 
+                id.includes('globe.gl') || 
+                id.includes('three-globe')
+              ) {
+                return 'globe';
+              }
+              if (
+                id.includes('node_modules/react/') || 
+                id.includes('node_modules/react-dom/') ||
+                id.includes('node_modules/scheduler/')
+              ) {
+                return 'vendor';
+              }
             }
           }
         }
