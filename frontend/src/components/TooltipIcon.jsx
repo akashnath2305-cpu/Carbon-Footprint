@@ -92,9 +92,15 @@ export default function TooltipIcon({ name, tooltipText, size = 20, className = 
   }
 
   return (
-    <div className={`tooltip-wrapper ${className}`} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: style.color || 'inherit', position: 'relative', ...style }}>
-      <IconComponent size={size} />
-      {tooltipText && <span className="tooltip-box">{tooltipText}</span>}
+    <div 
+      className={`tooltip-wrapper ${className}`} 
+      style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: style.color || 'inherit', position: 'relative', ...style }}
+      aria-label={tooltipText || name}
+      role={tooltipText ? "tooltip" : "img"}
+      tabIndex={tooltipText ? 0 : undefined}
+    >
+      <IconComponent size={size} aria-hidden="true" />
+      {tooltipText && <span className="tooltip-box" aria-hidden="true">{tooltipText}</span>}
     </div>
   );
 }

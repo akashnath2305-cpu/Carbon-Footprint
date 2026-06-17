@@ -534,6 +534,7 @@ export default function DashboardView({ initialTab, dashboardData, onLogAdded, o
                         <button
                           key={cat.id}
                           type="button"
+                          aria-pressed={category === cat.id}
                           className={category === cat.id ? 'skeuo-button' : 'skeuo-raised'}
                           style={{ 
                             padding: '10px 4px', 
@@ -557,6 +558,7 @@ export default function DashboardView({ initialTab, dashboardData, onLogAdded, o
                     <select 
                       value={subCategory} 
                       onChange={(e) => setSubCategory(e.target.value)} 
+                      aria-label="Select sub-category"
                       style={{ width: '100%', fontSize: '14px', backgroundColor: '#f1f5f9', color: '#000000', padding: '12px', borderRadius: '8px', border: '1px solid #cbd5e1' }}
                     >
                       {category === 'transportation' && (
