@@ -232,25 +232,26 @@ export default function GoalsTab() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {mockLeaderboard.map((user, index) => (
             <div key={user.id} style={{ 
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between', 
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px',
               background: user.isUser ? 'rgba(74, 222, 128, 0.15)' : 'rgba(0,0,0,0.3)', 
               border: user.isUser ? '1px solid rgba(74, 222, 128, 0.4)' : '1px solid rgba(255,255,255,0.05)',
               padding: '16px', borderRadius: '12px',
               boxShadow: user.isUser ? '0 4px 12px rgba(74, 222, 128, 0.1)' : 'none'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
                 <span style={{ 
                   fontWeight: 800, fontSize: '18px', width: '24px', textAlign: 'center',
-                  color: index === 0 ? '#fbbf24' : index === 1 ? '#cbd5e1' : index === 2 ? '#b45309' : 'var(--text-muted)'
+                  color: index === 0 ? '#fbbf24' : index === 1 ? '#cbd5e1' : index === 2 ? '#b45309' : 'var(--text-muted)',
+                  flexShrink: 0
                 }}>
                   {index + 1}
                 </span>
-                <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <Users size={18} color="#fff" />
                 </div>
-                <span style={{ color: '#fff', fontWeight: user.isUser ? 700 : 500, fontSize: '15px' }}>{user.name}</span>
+                <span style={{ color: '#fff', fontWeight: user.isUser ? 700 : 500, fontSize: '15px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.name}</span>
               </div>
-              <span style={{ color: user.isUser ? '#4ade80' : 'var(--accent-emerald)', fontWeight: 700 }}>
+              <span style={{ color: user.isUser ? '#4ade80' : 'var(--accent-emerald)', fontWeight: 700, whiteSpace: 'nowrap', flexShrink: 0, marginLeft: '8px' }}>
                 {user.savings}
               </span>
             </div>

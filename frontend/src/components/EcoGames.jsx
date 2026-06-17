@@ -203,12 +203,12 @@ function GamesHub({ onSelect }) {
         ))}
       </div>
       <div style={{ marginTop: '48px', padding: '30px', background: 'rgba(10, 10, 10, 0.65)', backdropFilter: 'blur(20px)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)', textAlign: 'left', boxShadow: '0 10px 30px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.05)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <Trophy size={24} style={{ color: '#fbbf24' }} />
             <h3 style={{ fontSize: '22px', color: '#ffffff', fontWeight: 700, margin: 0, fontFamily: "'Playfair Display', serif" }}>Eco-Points Leaderboard</h3>
           </div>
-          <button style={{ background: 'transparent', border: '1px solid var(--accent-emerald)', color: 'var(--accent-emerald)', padding: '8px 16px', borderRadius: '20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', fontWeight: 600 }}>
+          <button style={{ background: 'transparent', border: '1px solid var(--accent-emerald)', color: 'var(--accent-emerald)', padding: '8px 16px', borderRadius: '20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', fontWeight: 600, whiteSpace: 'nowrap', flexShrink: 0 }}>
             <UserPlus size={16} /> Add Friend
           </button>
         </div>
@@ -221,25 +221,26 @@ function GamesHub({ onSelect }) {
             { id: 4, name: "GreenNeighbor", score: 1500, isUser: false },
           ].map((user, index) => (
             <div key={user.id} style={{ 
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between', 
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px',
               background: user.isUser ? 'rgba(74, 222, 128, 0.15)' : 'rgba(0,0,0,0.3)', 
               border: user.isUser ? '1px solid rgba(74, 222, 128, 0.4)' : '1px solid rgba(255,255,255,0.05)',
               padding: '16px', borderRadius: '12px',
               boxShadow: user.isUser ? '0 4px 12px rgba(74, 222, 128, 0.1)' : 'none'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
                 <span style={{ 
                   fontWeight: 800, fontSize: '18px', width: '24px', textAlign: 'center',
-                  color: index === 0 ? '#fbbf24' : index === 1 ? '#cbd5e1' : index === 2 ? '#b45309' : 'var(--text-muted)'
+                  color: index === 0 ? '#fbbf24' : index === 1 ? '#cbd5e1' : index === 2 ? '#b45309' : 'var(--text-muted)',
+                  flexShrink: 0
                 }}>
                   {index + 1}
                 </span>
-                <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <Users size={18} color="#fff" />
                 </div>
-                <span style={{ color: '#fff', fontWeight: user.isUser ? 700 : 500, fontSize: '15px' }}>{user.name}</span>
+                <span style={{ color: '#fff', fontWeight: user.isUser ? 700 : 500, fontSize: '15px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.name}</span>
               </div>
-              <span style={{ color: user.isUser ? '#4ade80' : 'var(--accent-emerald)', fontWeight: 700 }}>
+              <span style={{ color: user.isUser ? '#4ade80' : 'var(--accent-emerald)', fontWeight: 700, whiteSpace: 'nowrap', flexShrink: 0, marginLeft: '8px' }}>
                 {user.score} pts
               </span>
             </div>

@@ -1,25 +1,25 @@
 .mobile-sidebar {
   position: fixed;
   top: 0;
-  right: -280px; /* Slide from right */
+  left: -280px; /* Slide from left */
   width: 280px;
   height: 100vh;
   background: rgba(10, 15, 10, 0.95);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  z-index: 1000;
-  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.8);
+  z-index: 10005;
+  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.8);
   padding: 80px 24px 24px 24px;
   display: flex;
   flex-direction: column;
   gap: 24px;
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
   overflow-y: auto;
 }
 
 .mobile-sidebar.open {
-  right: 0;
+  left: 0;
 }
 
 .mobile-sidebar-overlay {
@@ -29,7 +29,7 @@
   width: 100vw;
   height: 100vh;
   background: rgba(0, 0, 0, 0.6);
-  z-index: 999;
+  z-index: 10000;
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   opacity: 0;

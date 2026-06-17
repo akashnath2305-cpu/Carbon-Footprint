@@ -91,12 +91,12 @@ export default function WelcomeView({ currentUser, dashboardData, onLoginClick, 
           textAlign: 'center' 
         }}
       >
-        <div className="glass-panel animate-slide-up" style={{ padding: '60px 32px', marginBottom: '40px', borderTop: '1px solid rgba(255,255,255,0.3)' }}>
+        <div className="glass-panel animate-slide-up welcome-main-panel" style={{ marginBottom: '40px', borderTop: '1px solid rgba(255,255,255,0.3)' }}>
           <p style={{ fontSize: '18px', textTransform: 'uppercase', color: 'var(--accent-emerald)', letterSpacing: '0.15em', marginBottom: '16px', fontWeight: 700, margin: '0 0 16px 0' }}>
             Welcome to the future of sustainability
           </p>
           
-          <h1 style={{ fontSize: '48px', lineHeight: 1.2, marginBottom: '24px', maxWidth: '800px', margin: '0 auto 24px', color: 'var(--text-primary)', minHeight: '116px' }}>
+          <h1 className="welcome-title" style={{ lineHeight: 1.2, marginBottom: '24px', maxWidth: '800px', margin: '0 auto 24px', color: 'var(--text-primary)', minHeight: '116px' }}>
             Calculate Your Impact On <br/>
             <span className="typing-text typing-cursor" style={{ color: 'var(--accent-emerald)', fontWeight: 800 }}>
               {phrases[phraseIdx].substring(0, charIdx)}

@@ -66,7 +66,7 @@ export default function CommunityTab({ tips, fetchMore, hasMore, isLoading }) {
         <h2 style={{ fontSize: '24px', color: 'var(--text-dark)', margin: 0 }}>Community Campaigns</h2>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px', marginBottom: '40px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '24px', marginBottom: '40px' }}>
         {campaigns.map((camp, idx) => (
           <div key={idx} className="glass-panel" style={{ padding: '24px', backgroundColor: 'transparent', border: '1px solid var(--card-border)' }}>
             <h3 style={{ fontSize: '18px', color: 'var(--text-dark)', marginBottom: '8px' }}>{camp.title}</h3>

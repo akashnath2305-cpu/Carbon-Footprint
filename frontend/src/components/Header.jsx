@@ -136,22 +136,7 @@ export default function Header({ currentUser, dashboardData, onLoginClick, onCre
               </div>
 
               {isProfileOpen && (
-                <div className="animate-slide-up" style={{
-                  position: 'absolute',
-                  top: '100%',
-                  right: '48px',
-                  marginTop: '12px',
-                  background: 'rgba(5, 8, 15, 0.95)',
-                  border: '1px solid rgba(255,255,255,0.15)',
-                  borderRadius: '16px',
-                  padding: '24px',
-                  width: '260px',
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
-                  zIndex: 9999,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center'
-                }}>
+                <div className="animate-slide-up profile-dropdown-menu">
                   {isSelectingAvatar ? (
                     <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                       <h3 style={{ color: '#fff', margin: '0 0 16px 0' }}>Choose Avatar</h3>
@@ -315,16 +300,23 @@ export default function Header({ currentUser, dashboardData, onLoginClick, onCre
           
           {currentUser ? (
             <>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: 'auto' }}>
+              <div 
+                onClick={() => { setIsProfileOpen(true); setIsSelectingAvatar(true); }}
+                style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: 'auto', cursor: 'pointer' }}
+                title="Change Avatar"
+              >
                 {currentUser?.avatar_url ? (
-                  <img src={currentUser.avatar_url} alt="Profile" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
+                  <img src={currentUser.avatar_url} alt="Profile" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--accent-emerald)' }} />
                 ) : (
-                  <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid rgba(255,255,255,0.2)' }}>
                     <TooltipIcon name="User" size={20} style={{ color: '#fff' }} />
                   </div>
                 )}
                 <div>
-                  <div style={{ color: '#fff', fontWeight: 'bold' }}>{currentUser.username || 'Eco Warrior'}</div>
+                  <div style={{ color: '#fff', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    {currentUser.username || 'Eco Warrior'}
+                    <TooltipIcon name="Edit2" size={12} style={{ opacity: 0.6 }} />
+                  </div>
                   <div style={{ color: 'var(--accent-emerald)', fontSize: '12px' }}>{Math.round(totalEmissions || 0)} kg CO2</div>
                 </div>
               </div>

@@ -1016,7 +1016,7 @@ button:hover svg {
   background: rgba(10, 15, 10, 0.95);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  z-index: 1000;
+  z-index: 10005;
   transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 4px 0 24px rgba(0, 0, 0, 0.8);
   padding: 80px 24px 24px 24px;
@@ -1038,7 +1038,7 @@ button:hover svg {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.6);
-  z-index: 999;
+  z-index: 10000;
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   opacity: 0;
@@ -1049,6 +1049,66 @@ button:hover svg {
 .mobile-sidebar-overlay.open {
   opacity: 1;
   visibility: visible;
+}
+
+/* Hide desktop profile / logout on mobile devices */
+@media (max-width: 1024px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+  .hide-logout-mobile {
+    display: none !important;
+  }
+}
+
+/* Centered profile dropdown/avatar selector on mobile */
+.profile-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 48px;
+  margin-top: 12px;
+  background: rgba(5, 8, 15, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  padding: 24px;
+  width: 260px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  z-index: 10002;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .profile-dropdown-menu {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translate(-50%, -50%) !important;
+    margin-top: 0 !important;
+    z-index: 10010 !important;
+    box-shadow: 0 0 0 100vw rgba(0, 0, 0, 0.75), 0 8px 32px rgba(0,0,0,0.5) !important;
+  }
+}
+
+/* Responsive Welcome Panel and Title */
+.welcome-main-panel {
+  padding: 60px 32px;
+}
+
+.welcome-title {
+  font-size: 48px;
+  line-height: 1.2;
+}
+
+@media (max-width: 768px) {
+  .welcome-main-panel {
+    padding: 30px 16px !important;
+  }
+  .welcome-title {
+    font-size: 28px !important;
+  }
 }
 
 .mobile-menu-btn {

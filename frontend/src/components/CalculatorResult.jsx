@@ -156,7 +156,7 @@ export default function CalculatorResult({ result, onFinish }) {
 
       {/* Gemini Advice Goals */}
       <h3 style={{ fontSize: '28px', color: '#ffffff', marginBottom: '24px', fontFamily: "'Playfair Display', serif" }}>Adaptive Advice</h3>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px', marginBottom: '60px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '24px', marginBottom: '60px' }}>
         {suggestions && suggestions.map((s, index) => (
           <div key={index} className="glass-panel pulse-glow" style={{ padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
             <div>
