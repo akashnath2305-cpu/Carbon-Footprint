@@ -26,6 +26,11 @@ function AppContent() {
       const res = await fetch(`/api/dashboard?t=${Date.now()}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
+      if (res.status === 401 || res.status === 403) {
+        logout();
+        setView('welcome');
+        return;
+      }
       if (res.ok) {
         const data = await res.json();
         setDashboardData(data);
