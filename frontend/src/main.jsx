@@ -8,7 +8,7 @@ import { ToastProvider } from './context/ToastContext.jsx'
 const originalFetch = window.fetch;
 window.fetch = function (url, options) {
   const baseUrl = import.meta.env.VITE_BACKEND_URL || '';
-  if (typeof url === 'string' && url.startsWith('/api')) {
+  if (typeof url === 'string' && url.startsWith('/api') && import.meta.env.PROD && baseUrl) {
     url = `${baseUrl.replace(/\/$/, '')}${url}`;
   }
   return originalFetch(url, options);

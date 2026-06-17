@@ -43,8 +43,15 @@ export default function LoginView({ onLogin, initialIsSignUp = false }) {
       setShowSuccess(true);
       
       setTimeout(() => {
-        login(data.user, data.token);
-        if (onLogin) onLogin();
+        setShowSuccess(false);
+        if (isSignUp) {
+          setIsSignUp(false);
+          setPassword('');
+          setErrorMsg('');
+        } else {
+          login(data.user, data.token);
+          if (onLogin) onLogin();
+        }
       }, 1500);
       
     } catch (err) {
